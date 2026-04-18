@@ -17,6 +17,7 @@ import Chats from "./pages/Chats";
 import Schedule from "./pages/Schedule";
 import Legal from "./pages/Legal";
 import Notifications from "./pages/Notifications";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="schedule" element={<Schedule />} />
               <Route path="legal" element={<Legal />} />
               <Route path="notifications" element={<Notifications />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Calendar, Scale, Bell, LogOut, Inbox, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Calendar, Scale, Bell, LogOut, Inbox, MessageSquare, User } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useApp } from "@/store/appStore";
@@ -75,13 +75,14 @@ export default function AppShell() {
           ))}
         </nav>
         <div className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-3 mb-3 px-2">
+          <NavLink to="/app/profile" className={({ isActive }) => `flex items-center gap-3 mb-3 px-2 py-2 rounded-xl transition-smooth ${isActive ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/50"}`}>
             <div className="h-10 w-10 rounded-full gradient-success flex items-center justify-center text-white font-semibold text-sm">{initials}</div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold truncate">{displayName}</div>
+              <div className="text-sm font-semibold truncate text-white">{displayName}</div>
               <div className="text-xs text-sidebar-foreground/60 truncate">{role ? t(`roles.${role}`) : ""}</div>
             </div>
-          </div>
+            <User className="h-4 w-4 text-sidebar-foreground/60" />
+          </NavLink>
           <Button onClick={handleLogout} variant="ghost" size="sm" className="w-full justify-start text-sidebar-foreground/70 hover:text-white hover:bg-sidebar-accent/50">
             <LogOut className="h-4 w-4 mr-2" /> {t("nav.logout")}
           </Button>
