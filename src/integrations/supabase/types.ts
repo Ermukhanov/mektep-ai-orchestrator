@@ -59,6 +59,45 @@ export type Database = {
           },
         ]
       }
+      ai_memory: {
+        Row: {
+          context: Json
+          created_at: string
+          decision: Json
+          director_note: string | null
+          id: string
+          last_used_at: string
+          outcome: string | null
+          pattern_key: string
+          pattern_type: string
+          usage_count: number
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          decision?: Json
+          director_note?: string | null
+          id?: string
+          last_used_at?: string
+          outcome?: string | null
+          pattern_key: string
+          pattern_type: string
+          usage_count?: number
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          decision?: Json
+          director_note?: string | null
+          id?: string
+          last_used_at?: string
+          outcome?: string | null
+          pattern_key?: string
+          pattern_type?: string
+          usage_count?: number
+        }
+        Relationships: []
+      }
       attendance_reports: {
         Row: {
           absent: number
@@ -115,11 +154,14 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          chat_room: string
           created_at: string
           external_id: string | null
           id: string
           language: string | null
+          metadata: Json
           processed: boolean
+          reply_to_message_id: string | null
           sender_name: string
           sender_staff_id: string | null
           sender_user_id: string | null
@@ -127,11 +169,14 @@ export type Database = {
           text: string
         }
         Insert: {
+          chat_room?: string
           created_at?: string
           external_id?: string | null
           id?: string
           language?: string | null
+          metadata?: Json
           processed?: boolean
+          reply_to_message_id?: string | null
           sender_name: string
           sender_staff_id?: string | null
           sender_user_id?: string | null
@@ -139,11 +184,14 @@ export type Database = {
           text: string
         }
         Update: {
+          chat_room?: string
           created_at?: string
           external_id?: string | null
           id?: string
           language?: string | null
+          metadata?: Json
           processed?: boolean
+          reply_to_message_id?: string | null
           sender_name?: string
           sender_staff_id?: string | null
           sender_user_id?: string | null
@@ -152,6 +200,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "chat_messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "chat_messages_sender_staff_id_fkey"
             columns: ["sender_staff_id"]
             isOneToOne: false
@@ -159,6 +214,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string
+          description: string | null
+          external_chat_id: string | null
+          id: string
+          member_role: Database["public"]["Enums"]["app_role"] | null
+          name: string
+          slug: string
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          external_chat_id?: string | null
+          id?: string
+          member_role?: Database["public"]["Enums"]["app_role"] | null
+          name: string
+          slug: string
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          external_chat_id?: string | null
+          id?: string
+          member_role?: Database["public"]["Enums"]["app_role"] | null
+          name?: string
+          slug?: string
+          source?: string
+        }
+        Relationships: []
       }
       classes: {
         Row: {
@@ -513,6 +601,70 @@ export type Database = {
             columns: ["owner_staff_id"]
             isOneToOne: false
             referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schedule_overrides: {
+        Row: {
+          ai_generated: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          new_room: string | null
+          new_teacher_id: string | null
+          note: string | null
+          override_date: string
+          override_type: string
+          related_substitution_id: string | null
+          slot_id: string | null
+        }
+        Insert: {
+          ai_generated?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_room?: string | null
+          new_teacher_id?: string | null
+          note?: string | null
+          override_date?: string
+          override_type: string
+          related_substitution_id?: string | null
+          slot_id?: string | null
+        }
+        Update: {
+          ai_generated?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_room?: string | null
+          new_teacher_id?: string | null
+          note?: string | null
+          override_date?: string
+          override_type?: string
+          related_substitution_id?: string | null
+          slot_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_overrides_new_teacher_id_fkey"
+            columns: ["new_teacher_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_overrides_related_substitution_id_fkey"
+            columns: ["related_substitution_id"]
+            isOneToOne: false
+            referencedRelation: "substitutions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_overrides_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_slots"
             referencedColumns: ["id"]
           },
         ]
