@@ -1,1 +1,13 @@
 project_id = "alcupxayscatqagboibf"
+
+[functions.parse-chat]
+verify_jwt = false
+
+[functions.decide-action]
+verify_jwt = true
+
+[functions.voice-task]
+verify_jwt = true
+
+[functions.legal-chat]
+verify_jwt = false

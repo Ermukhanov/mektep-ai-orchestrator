@@ -396,6 +396,56 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_actions: {
+        Row: {
+          action_type: string
+          ai_reasoning: string | null
+          ai_summary: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          payload: Json
+          result: Json | null
+          source_message_id: string | null
+          status: string
+        }
+        Insert: {
+          action_type: string
+          ai_reasoning?: string | null
+          ai_summary?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          payload?: Json
+          result?: Json | null
+          source_message_id?: string | null
+          status?: string
+        }
+        Update: {
+          action_type?: string
+          ai_reasoning?: string | null
+          ai_summary?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          payload?: Json
+          result?: Json | null
+          source_message_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_actions_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
