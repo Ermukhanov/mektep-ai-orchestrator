@@ -14,16 +14,692 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      absences: {
+        Row: {
+          absence_date: string
+          created_at: string
+          id: string
+          reason: string | null
+          source_message_id: string | null
+          staff_id: string | null
+          staff_name: string
+        }
+        Insert: {
+          absence_date?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          source_message_id?: string | null
+          staff_id?: string | null
+          staff_name: string
+        }
+        Update: {
+          absence_date?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          source_message_id?: string | null
+          staff_id?: string | null
+          staff_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "absences_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "absences_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attendance_reports: {
+        Row: {
+          absent: number
+          absent_reason: string | null
+          class_name: string
+          created_at: string
+          id: string
+          present: number
+          report_date: string
+          reported_by_name: string | null
+          reported_by_staff_id: string | null
+          source_message_id: string | null
+        }
+        Insert: {
+          absent?: number
+          absent_reason?: string | null
+          class_name: string
+          created_at?: string
+          id?: string
+          present?: number
+          report_date?: string
+          reported_by_name?: string | null
+          reported_by_staff_id?: string | null
+          source_message_id?: string | null
+        }
+        Update: {
+          absent?: number
+          absent_reason?: string | null
+          class_name?: string
+          created_at?: string
+          id?: string
+          present?: number
+          report_date?: string
+          reported_by_name?: string | null
+          reported_by_staff_id?: string | null
+          source_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_reports_reported_by_staff_id_fkey"
+            columns: ["reported_by_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_reports_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          created_at: string
+          external_id: string | null
+          id: string
+          language: string | null
+          processed: boolean
+          sender_name: string
+          sender_staff_id: string | null
+          sender_user_id: string | null
+          source: string
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          language?: string | null
+          processed?: boolean
+          sender_name: string
+          sender_staff_id?: string | null
+          sender_user_id?: string | null
+          source?: string
+          text: string
+        }
+        Update: {
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          language?: string | null
+          processed?: boolean
+          sender_name?: string
+          sender_staff_id?: string | null
+          sender_user_id?: string | null
+          source?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_sender_staff_id_fkey"
+            columns: ["sender_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          created_at: string
+          grade: number | null
+          id: string
+          name: string
+          student_count: number
+        }
+        Insert: {
+          created_at?: string
+          grade?: number | null
+          id?: string
+          name: string
+          student_count?: number
+        }
+        Update: {
+          created_at?: string
+          grade?: number | null
+          id?: string
+          name?: string
+          student_count?: number
+        }
+        Relationships: []
+      }
+      incidents: {
+        Row: {
+          assigned_staff_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          location: string | null
+          reporter_name: string | null
+          reporter_staff_id: string | null
+          severity: string
+          source_message_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_staff_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          reporter_name?: string | null
+          reporter_staff_id?: string | null
+          severity?: string
+          source_message_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_staff_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          reporter_name?: string | null
+          reporter_staff_id?: string | null
+          severity?: string
+          source_message_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_assigned_staff_id_fkey"
+            columns: ["assigned_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_reporter_staff_id_fkey"
+            columns: ["reporter_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_chunks: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          embedding: string | null
+          id: string
+          order_id: string
+        }
+        Insert: {
+          chunk_index: number
+          content: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          order_id: string
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_chunks_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "legal_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_orders: {
+        Row: {
+          bullets: Json
+          created_at: string
+          date_published: string | null
+          full_text: string | null
+          id: string
+          number: string
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          bullets?: Json
+          created_at?: string
+          date_published?: string | null
+          full_text?: string | null
+          id?: string
+          number: string
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          bullets?: Json
+          created_at?: string
+          date_published?: string | null
+          full_text?: string | null
+          id?: string
+          number?: string
+          summary?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      message_parses: {
+        Row: {
+          ai_reply: string | null
+          confidence: number | null
+          created_at: string
+          entities: Json
+          id: string
+          intent: string
+          message_id: string
+        }
+        Insert: {
+          ai_reply?: string | null
+          confidence?: number | null
+          created_at?: string
+          entities?: Json
+          id?: string
+          intent: string
+          message_id: string
+        }
+        Update: {
+          ai_reply?: string | null
+          confidence?: number | null
+          created_at?: string
+          entities?: Json
+          id?: string
+          intent?: string
+          message_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_parses_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          read: boolean
+          recipient_role: Database["public"]["Enums"]["app_role"] | null
+          recipient_user_id: string | null
+          related_entity: string | null
+          related_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          recipient_role?: Database["public"]["Enums"]["app_role"] | null
+          recipient_user_id?: string | null
+          related_entity?: string | null
+          related_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          recipient_role?: Database["public"]["Enums"]["app_role"] | null
+          recipient_user_id?: string | null
+          related_entity?: string | null
+          related_id?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          language: string
+          staff_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          language?: string
+          staff_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          language?: string
+          staff_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rooms: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          floor: number | null
+          home_class: string | null
+          id: string
+          number: string
+          owner_staff_id: string | null
+          subject: string | null
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          floor?: number | null
+          home_class?: string | null
+          id?: string
+          number: string
+          owner_staff_id?: string | null
+          subject?: string | null
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          floor?: number | null
+          home_class?: string | null
+          id?: string
+          number?: string
+          owner_staff_id?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_owner_staff_id_fkey"
+            columns: ["owner_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schedule_slots: {
+        Row: {
+          class_name: string
+          created_at: string
+          day_of_week: string
+          id: string
+          period: number
+          room: string | null
+          subject_norm: string | null
+          subject_raw: string
+          teacher_id: string | null
+          teacher_raw: string | null
+          time_label: string | null
+        }
+        Insert: {
+          class_name: string
+          created_at?: string
+          day_of_week: string
+          id?: string
+          period: number
+          room?: string | null
+          subject_norm?: string | null
+          subject_raw: string
+          teacher_id?: string | null
+          teacher_raw?: string | null
+          time_label?: string | null
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          day_of_week?: string
+          id?: string
+          period?: number
+          room?: string | null
+          subject_norm?: string | null
+          subject_raw?: string
+          teacher_id?: string | null
+          teacher_raw?: string | null
+          time_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_slots_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          phone: string | null
+          short_name: string | null
+          subjects: string[]
+          telegram_chat_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          short_name?: string | null
+          subjects?: string[]
+          telegram_chat_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          short_name?: string | null
+          subjects?: string[]
+          telegram_chat_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      substitutions: {
+        Row: {
+          absence_id: string | null
+          ai_reasoning: string | null
+          created_at: string
+          for_date: string
+          id: string
+          slot_id: string | null
+          status: string
+          substitute_staff_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          absence_id?: string | null
+          ai_reasoning?: string | null
+          created_at?: string
+          for_date?: string
+          id?: string
+          slot_id?: string | null
+          status?: string
+          substitute_staff_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          absence_id?: string | null
+          ai_reasoning?: string | null
+          created_at?: string
+          for_date?: string
+          id?: string
+          slot_id?: string | null
+          status?: string
+          substitute_staff_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "substitutions_absence_id_fkey"
+            columns: ["absence_id"]
+            isOneToOne: false
+            referencedRelation: "absences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "substitutions_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_slots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "substitutions_substitute_staff_id_fkey"
+            columns: ["substitute_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assignee_name: string | null
+          assignee_staff_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_at: string | null
+          id: string
+          source: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_name?: string | null
+          assignee_staff_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          source?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_name?: string | null
+          assignee_staff_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_staff_id_fkey"
+            columns: ["assignee_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "director" | "teacher" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +826,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["director", "teacher", "staff"],
+    },
   },
 } as const
