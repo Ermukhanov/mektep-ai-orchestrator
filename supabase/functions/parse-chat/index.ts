@@ -1,5 +1,6 @@
-// Parses an incoming chat message with Gemini, extracts intent & entities,
-// and inserts proposals into pending_actions for director approval.
+// MEKTEP AI — reads every chat message, decides what to do,
+// auto-replies in the chat (formal & elegant), creates incidents/tasks,
+// notifies the director, and queues sensitive actions for approval.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -8,25 +9,51 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `You are MEKTEP AI — the operations brain of "Aqbobek" school.
-You read every chat message that staff send (in Kazakh, Russian, or English) and decide what should happen.
+const SYSTEM_PROMPT = `Сен — MEKTEP AI, "Ақбөбек" мектебінің ресми цифрлық көмекшісі.
+You are MEKTEP AI — the official digital chief-of-staff of "Aqbobek" school complex.
 
-Possible intents:
-- attendance_report   → teacher says "7A — 22 пришли, 3 нет" / "8B қатысты 25, жоқ 1"
-- teacher_absence     → "I'm sick today", "Ауырып қалдым", "не приду завтра"
-- student_absence     → a student didn't come; reporter mentions student names
-- incident            → broken chair, leaking pipe, fight, anything wrong with the building
-- task_request        → "order water for the gym", "Айгерим, prepare hall"
-- question            → asks about a regulation, schedule, etc.
-- chitchat            → no action needed
+ТВОЯ РОЛЬ / YOUR ROLE:
+Ты читаешь КАЖДОЕ сообщение от учителей и сотрудников в чате (WhatsApp / Telegram / внутренний чат) на казахском, русском или английском языке. Ты:
+1. Понимаешь намерение (intent) и извлекаешь сущности.
+2. Сразу отвечаешь в чате — красиво, официально, доброжелательно, как опытный завуч.
+3. Решаешь, какое действие нужно совершить.
+4. Уведомляешь директора, если случилось что-то важное.
 
-Always:
-1. Detect language ("kk" | "ru" | "en") and respond in the SAME language as the message.
-2. Be concise, polite, professional.
-3. Propose a single best action with high confidence, OR no action.
-4. Never invent staff names; pick from the provided staff list when needed.
+СТИЛЬ ОТВЕТА (ai_reply) — КРИТИЧЕСКИ ВАЖНО:
+• Всегда отвечай на ТОМ ЖЕ языке, что и сообщение (kk / ru / en).
+• Тон — официальный, тёплый, профессиональный. Как директор школы говорит с коллегой.
+• Обязательно обращайся по имени, если оно известно ("Айгүл Сериковна", "Дмитрий Петрович").
+• Краткость + ясность. 1–3 предложения. До 280 символов.
+• Подтверди, что ты ЗАФИКСИРОВАЛ информацию ("Принято", "Қабылданды", "Noted").
+• Если нужно одобрение директора — скажи: "Передал директору на согласование" / "Директорға жіберілді" / "Forwarded to the director for approval".
+• Если инцидент — добавь сочувствие и заверение, что вопрос решается.
+• НИКОГДА не используй смайлы, кроме одного делового в начале (✓, 📋, 🔔). 
+• НИКОГДА не пиши "как ИИ", не извиняйся за свою природу, не задавай лишних вопросов.
 
-Return STRICTLY a tool call to "propose_action".`;
+ПРИМЕРЫ ОТВЕТОВ:
+• Учитель сообщил посещаемость "7А — 22 пришли, 1 нет (болеет)":
+  → "✓ Принято, Айгүл Сериковна. По 7А: 22 присутствуют, 1 отсутствует (болезнь). Данные внесены в журнал."
+• Учитель пишет "Ауырып қалдым, ертең келе алмаймын":
+  → "✓ Қабылданды, Дәурен Қайратұлы. Тез арада сауығып кетіңіз. Орынбасу ұсыныстары директорға жіберілді."
+• Кто-то сообщил о сломанном стуле в 12 кабинете:
+  → "📋 Принято. Инцидент №зарегистрирован: сломанный стул в каб. 12. Завхоз уведомлён, директор проинформирован."
+• Сообщение "доброе утро коллеги":
+  → "Доброе утро! Хорошего рабочего дня."
+
+ВОЗМОЖНЫЕ INTENT:
+- attendance_report   → отчёт по посещаемости класса
+- teacher_absence     → учитель сообщает о своём отсутствии
+- student_absence     → ученик не пришёл
+- incident            → поломка, ЧП, конфликт, проблема в здании
+- task_request        → просьба что-то сделать ("закажи воду", "подготовь зал")
+- question            → вопрос про регламент, расписание, приказ
+- chitchat            → приветствие, благодарность — без действия
+
+REQUIRES_APPROVAL:
+• true для: teacher_absence (нужны замены), task_request (нужен исполнитель), incident с severity=high
+• false для: attendance_report (низкий риск), incident с severity=low/medium (создаём сразу, директор видит в дашборде), chitchat, question
+
+Возвращай ТОЛЬКО tool call propose_action. Никакого свободного текста.`;
 
 function tools() {
   return [
@@ -34,8 +61,7 @@ function tools() {
       type: "function",
       function: {
         name: "propose_action",
-        description:
-          "Decide what action MEKTEP AI should take after reading the message.",
+        description: "Decide what MEKTEP AI should do after reading the message.",
         parameters: {
           type: "object",
           additionalProperties: false,
@@ -57,13 +83,9 @@ function tools() {
             ai_reply: {
               type: "string",
               description:
-                "Short reply to send back to the chat in the same language. Keep under 280 chars.",
+                "Formal, warm, concise reply in the SAME language as the message. Under 280 chars. Address the sender by name when known.",
             },
-            requires_approval: {
-              type: "boolean",
-              description:
-                "True if director must approve before executing (substitutions, incidents, tasks).",
-            },
+            requires_approval: { type: "boolean" },
             action_type: {
               type: "string",
               enum: [
@@ -77,7 +99,6 @@ function tools() {
             },
             payload: {
               type: "object",
-              description: "Structured fields the action needs.",
               properties: {
                 class_name: { type: "string" },
                 present: { type: "number" },
@@ -85,10 +106,7 @@ function tools() {
                 absent_reason: { type: "string" },
                 staff_name: { type: "string" },
                 absence_reason: { type: "string" },
-                absence_date: {
-                  type: "string",
-                  description: "YYYY-MM-DD, default today",
-                },
+                absence_date: { type: "string" },
                 incident_title: { type: "string" },
                 incident_description: { type: "string" },
                 incident_location: { type: "string" },
@@ -145,13 +163,12 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (msg.processed) {
+    if (msg.processed || msg.source === "ai") {
       return new Response(JSON.stringify({ ok: true, skipped: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Load staff names so the model can pick correct names.
     const { data: staff } = await supabase
       .from("staff")
       .select("full_name, short_name, subjects");
@@ -160,13 +177,17 @@ Deno.serve(async (req) => {
       .map((s) => `- ${s.full_name} (${s.subjects?.join(", ") || ""})`)
       .join("\n");
 
-    const userPrompt = `Message from ${msg.sender_name} (source: ${msg.source}):
+    const userPrompt = `Сообщение от: ${msg.sender_name}
+Канал: ${msg.source}
+Время: ${new Date(msg.created_at).toLocaleString("ru-RU")}
+
+Текст:
 """${msg.text}"""
 
-Staff directory (use these exact names if you reference anyone):
+Список сотрудников школы (используй ТОЧНЫЕ имена, если ссылаешься):
 ${staffList}
 
-Decide one action by calling propose_action.`;
+Прими решение через propose_action. Ответ (ai_reply) — обязательно официально, на языке сообщения, с обращением по имени.`;
 
     const aiRes = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
@@ -218,7 +239,7 @@ Decide one action by calling propose_action.`;
 
     const args = JSON.parse(call.function.arguments);
 
-    // Save the parse trace
+    // 1. Save the parse trace
     await supabase.from("message_parses").insert({
       message_id: msg.id,
       intent: args.intent,
@@ -227,11 +248,24 @@ Decide one action by calling propose_action.`;
       ai_reply: args.ai_reply,
     });
 
-    // Auto-execute attendance reports (low risk, frequent) — but still log a
-    // pending_action so director sees the AI worked.
+    // 2. ALWAYS post AI reply back into the chat (visible to everyone in Inbox & Live Feed)
+    if (args.ai_reply) {
+      await supabase.from("chat_messages").insert({
+        text: args.ai_reply,
+        sender_name: "MEKTEP AI",
+        source: "ai",
+        language: args.language,
+        processed: true,
+      });
+    }
+
+    // 3. Auto-execute low-risk actions
     let autoExecuted = false;
+    let createdEntityId: string | null = null;
+    let createdEntityType: string | null = null;
+
     if (args.action_type === "log_attendance" && args.payload?.class_name) {
-      await supabase.from("attendance_reports").insert({
+      const { data: ar } = await supabase.from("attendance_reports").insert({
         class_name: args.payload.class_name,
         present: args.payload.present || 0,
         absent: args.payload.absent || 0,
@@ -239,30 +273,86 @@ Decide one action by calling propose_action.`;
         reported_by_name: msg.sender_name,
         reported_by_staff_id: msg.sender_staff_id,
         source_message_id: msg.id,
-      });
+      }).select("id").single();
       autoExecuted = true;
+      createdEntityId = ar?.id || null;
+      createdEntityType = "attendance";
     }
 
-    // Always queue a pending_action for director visibility (except chitchat).
-    if (args.action_type !== "none" && args.intent !== "chitchat") {
-      await supabase.from("pending_actions").insert({
+    // Auto-create incidents (low/medium severity) so director sees them immediately
+    if (
+      args.action_type === "create_incident" &&
+      args.payload?.incident_title &&
+      args.payload?.incident_severity !== "high"
+    ) {
+      const { data: inc } = await supabase.from("incidents").insert({
+        title: args.payload.incident_title,
+        description: args.payload.incident_description || null,
+        location: args.payload.incident_location || null,
+        severity: args.payload.incident_severity || "medium",
+        status: "open",
+        reporter_name: msg.sender_name,
+        reporter_staff_id: msg.sender_staff_id,
+        source_message_id: msg.id,
+      }).select("id").single();
+      autoExecuted = true;
+      createdEntityId = inc?.id || null;
+      createdEntityType = "incident";
+
+      // Notify director
+      await supabase.from("notifications").insert({
+        type: "incident",
+        title: `🔔 Новый инцидент: ${args.payload.incident_title}`,
+        body: `${args.payload.incident_location || ""} — сообщил(а) ${msg.sender_name}`,
+        recipient_role: "director",
+        related_entity: "incident",
+        related_id: inc?.id || null,
+      });
+    }
+
+    // 4. Queue pending action for director (skip chitchat & none)
+    if (
+      args.action_type !== "none" &&
+      args.intent !== "chitchat" &&
+      !(autoExecuted && args.action_type === "log_attendance")
+    ) {
+      const { data: pa } = await supabase.from("pending_actions").insert({
         source_message_id: msg.id,
         action_type: args.action_type,
         payload: { ...args.payload, language: args.language },
         ai_summary: args.ai_reply,
         ai_reasoning: `Intent: ${args.intent}, confidence: ${args.confidence}`,
         status: autoExecuted ? "executed" : "pending",
-      });
+      }).select("id").single();
+
+      // Notify director about new pending decision
+      if (!autoExecuted) {
+        await supabase.from("notifications").insert({
+          type: args.intent === "incident" ? "incident" : "task",
+          title: `🤖 Требуется решение: ${args.intent}`,
+          body: args.ai_reply || `От ${msg.sender_name}`,
+          recipient_role: "director",
+          related_entity: "pending_action",
+          related_id: pa?.id || null,
+        });
+      }
     }
 
-    // Mark the message as processed
+    // 5. Mark message as processed
     await supabase
       .from("chat_messages")
       .update({ processed: true, language: args.language })
       .eq("id", msg.id);
 
     return new Response(
-      JSON.stringify({ ok: true, intent: args.intent, autoExecuted }),
+      JSON.stringify({
+        ok: true,
+        intent: args.intent,
+        autoExecuted,
+        ai_reply: args.ai_reply,
+        createdEntityType,
+        createdEntityId,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
