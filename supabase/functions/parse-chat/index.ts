@@ -1,5 +1,6 @@
 // MEKTEP AI — reads every chat message, applies learned patterns from ai_memory,
-// auto-replies in same chat_room, creates incidents/tasks, notifies director.
+// replies ONLY for critical events (teacher absence, high-severity incidents),
+// always creates incidents/tasks on dashboard, notifies director.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -8,44 +9,40 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `Сен — MEKTEP AI, "Ақбөбек" мектебінің ресми цифрлық көмекшісі.
-You are MEKTEP AI — the official digital chief-of-staff of "Aqbobek" school complex.
+const SYSTEM_PROMPT = `Ты — MEKTEP AI, цифровой завуч школы «Ақбөбек».
 
-ТВОЯ РОЛЬ:
-Ты читаешь КАЖДОЕ сообщение от учителей, родителей и сотрудников в чатах (внутренний / Telegram / WhatsApp) на казахском, русском или английском.
-Ты:
-1. Понимаешь намерение и извлекаешь сущности.
-2. Сразу отвечаешь в чате — красиво, официально, доброжелательно, как опытный завуч.
-3. Применяешь ПРОШЛЫЕ РЕШЕНИЯ ДИРЕКТОРА (см. секцию MEMORY ниже) — если похожая ситуация уже была.
-4. Уведомляешь директора и создаёшь нужные действия.
+ТВОЯ ГЛАВНАЯ ЗАДАЧА:
+1. Понять намерение сообщения и извлечь данные
+2. Зафиксировать всё важное в системе (посещаемость, инциденты, задачи)
+3. Отвечать в чате ТОЛЬКО в критических случаях — не засорять чат
 
-СТИЛЬ ОТВЕТА (ai_reply) — КРИТИЧЕСКИ ВАЖНО:
-• ВСЕГДА на ТОМ ЖЕ языке что и сообщение (kk / ru / en).
-• Тон — официальный, тёплый, профессиональный.
-• Обращайся по имени, если оно известно.
-• 1–3 предложения, до 280 символов.
-• Подтверди что зафиксировал ("Принято", "Қабылданды", "Noted").
-• Если нужно одобрение — "Передал директору на согласование" / "Директорға жіберілді" / "Forwarded to the director".
-• Никаких смайлов кроме одного делового в начале (✓ 📋 🔔 📚).
-• НИКОГДА не пиши "как ИИ", не извиняйся за свою природу.
+КОГДА ОТВЕЧАТЬ В ЧАТ (should_reply = true):
+✓ Учитель сообщает о СВОЕЙ болезни / отсутствии
+✓ Инцидент с severity = high (ЧП, травма, пожар, серьёзная поломка)
+✓ Сообщение требует срочного подтверждения директора
 
-ОБУЧЕНИЕ (MEMORY):
-Если в секции "Прошлые решения директора" есть похожий паттерн — ПРИМЕНИ его автоматически с высокой confidence. Это значит директор так уже решал, и согласован обычно тот же сценарий.
-Если pattern.outcome = "rejected" — НЕ предлагай это действие повторно, выбери другой.
+КОГДА НЕ ОТВЕЧАТЬ (should_reply = false):
+✗ Обычный отчёт по посещаемости — просто фиксируем молча
+✗ Приветствия, болтовня
+✗ Вопросы без срочности
+✗ Инциденты low/medium — создаём задачу, директор увидит в панели
+✗ Любое рутинное сообщение
 
-INTENT:
-- attendance_report   → отчёт по посещаемости класса
-- teacher_absence     → учитель сообщает о своём отсутствии
-- student_absence     → ученик не пришёл
-- incident            → поломка, ЧП, конфликт, проблема
-- task_request        → просьба что-то сделать
-- question            → вопрос про регламент / расписание
-- chitchat            → приветствие — без действия
+СТИЛЬ ОТВЕТА (когда всё же отвечаем):
+• На том же языке что и сообщение (kk / ru / en)
+• Официальный, деловой тон
+• 1–2 предложения максимум, до 200 символов
+• Начинать с: ✓ (подтверждение) или 🔔 (срочно)
+• "Передано директору" / "Директорға жіберілді"
 
-REQUIRES_APPROVAL:
-• true: teacher_absence, task_request, incident severity=high
-• false: attendance_report, incident low/medium (создаём сразу), chitchat, question
-• Если в MEMORY есть approved паттерн с confidence ≥ 0.85 — ставь requires_approval=false.
+INTENT классификация:
+- attendance_report   → посещаемость класса (НЕ отвечаем)
+- teacher_absence     → учитель болен/отсутствует (ОТВЕЧАЕМ)
+- student_absence     → ученик не пришёл (НЕ отвечаем)
+- incident            → проблема/поломка (отвечаем ТОЛЬКО если high)
+- task_request        → просьба что-то сделать (НЕ отвечаем, создаём задачу)
+- question            → вопрос (НЕ отвечаем в чат)
+- chitchat            → приветствие (НЕ отвечаем)
 
 Возвращай ТОЛЬКО tool call propose_action.`;
 
@@ -55,7 +52,7 @@ function tools() {
       type: "function",
       function: {
         name: "propose_action",
-        description: "Decide what MEKTEP AI should do.",
+        description: "Decide what MEKTEP AI should do with this message.",
         parameters: {
           type: "object",
           additionalProperties: false,
@@ -74,17 +71,17 @@ function tools() {
               ],
             },
             confidence: { type: "number", minimum: 0, maximum: 1 },
-            ai_reply: { type: "string" },
-            requires_approval: { type: "boolean" },
-            memory_applied: {
+            should_reply: {
               type: "boolean",
-              description: "True if a past director decision was reused.",
+              description: "Only true for teacher_absence or high-severity incidents. False for routine messages.",
             },
-            pattern_key: {
+            ai_reply: {
               type: "string",
-              description:
-                "Short stable key describing this situation, e.g. 'physics_teacher_absent_short_notice', 'broken_chair_classroom'. Used to recall this decision next time.",
+              description: "Short reply ONLY if should_reply=true. Empty string otherwise.",
             },
+            requires_approval: { type: "boolean" },
+            memory_applied: { type: "boolean" },
+            pattern_key: { type: "string" },
             action_type: {
               type: "string",
               enum: [
@@ -123,6 +120,7 @@ function tools() {
             "language",
             "intent",
             "confidence",
+            "should_reply",
             "ai_reply",
             "requires_approval",
             "memory_applied",
@@ -158,12 +156,15 @@ Deno.serve(async (req) => {
       .select("*")
       .eq("id", message_id)
       .single();
+
     if (msgErr || !msg) {
       return new Response(JSON.stringify({ error: "message not found" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Skip if already processed or if it's an AI message
     if (msg.processed || msg.source === "ai") {
       return new Response(JSON.stringify({ ok: true, skipped: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -177,7 +178,7 @@ Deno.serve(async (req) => {
         .from("ai_memory")
         .select("pattern_type, pattern_key, decision, outcome, director_note, usage_count")
         .order("last_used_at", { ascending: false })
-        .limit(30),
+        .limit(20),
     ]);
 
     const staffList = (staff || [])
@@ -189,13 +190,13 @@ Deno.serve(async (req) => {
           .map(
             (m) =>
               `- [${m.outcome || "unknown"}] ${m.pattern_key} → ${
-                JSON.stringify(m.decision).slice(0, 120)
+                JSON.stringify(m.decision).slice(0, 100)
               }${m.director_note ? ` | note: ${m.director_note}` : ""} (used ${m.usage_count}×)`,
           )
           .join("\n")
-      : "(пока пусто — это первое решение для подобных ситуаций)";
+      : "(нет прошлых решений)";
 
-    const userPrompt = `Канал чата: ${msg.chat_room || "general"}
+    const userPrompt = `Канал: ${msg.chat_room || "general"}
 Источник: ${msg.source}
 Отправитель: ${msg.sender_name}
 Время: ${new Date(msg.created_at).toLocaleString("ru-RU")}
@@ -203,13 +204,13 @@ Deno.serve(async (req) => {
 Сообщение:
 """${msg.text}"""
 
-═══ Сотрудники школы (используй ТОЧНЫЕ имена) ═══
+═══ Сотрудники школы ═══
 ${staffList}
 
-═══ ПРОШЛЫЕ РЕШЕНИЯ ДИРЕКТОРА (memory) ═══
+═══ ПРОШЛЫЕ РЕШЕНИЯ ДИРЕКТОРА ═══
 ${memoryList}
 
-Прими решение через propose_action. Если в memory есть похожий паттерн — переиспользуй его и поставь memory_applied=true.`;
+Важно: should_reply=true ТОЛЬКО если учитель болен ИЛИ incident severity=high. Для посещаемости и рутины — should_reply=false, ai_reply="".`;
 
     const aiRes = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
@@ -264,11 +265,11 @@ ${memoryList}
       intent: args.intent,
       entities: { ...(args.payload || {}), pattern_key: args.pattern_key, memory_applied: args.memory_applied },
       confidence: args.confidence,
-      ai_reply: args.ai_reply,
+      ai_reply: args.should_reply ? args.ai_reply : null,
     });
 
-    // ALWAYS post AI reply back into SAME chat_room
-    if (args.ai_reply) {
+    // Post AI reply to chat ONLY if should_reply=true AND reply is not empty
+    if (args.should_reply && args.ai_reply && args.ai_reply.trim().length > 0) {
       await supabase.from("chat_messages").insert({
         text: args.ai_reply,
         sender_name: "MEKTEP AI",
@@ -285,7 +286,7 @@ ${memoryList}
     let createdEntityId: string | null = null;
     let createdEntityType: string | null = null;
 
-    // Auto attendance
+    // Auto-log attendance silently (no reply needed)
     if (args.action_type === "log_attendance" && args.payload?.class_name) {
       const { data: ar } = await supabase.from("attendance_reports").insert({
         class_name: args.payload.class_name,
@@ -301,43 +302,46 @@ ${memoryList}
       createdEntityType = "attendance";
     }
 
-    // Auto incidents low/medium
+    // Auto-create incidents (low and medium automatically, high needs approval)
     if (
       args.action_type === "create_incident" &&
-      args.payload?.incident_title &&
-      args.payload?.incident_severity !== "high"
+      args.payload?.incident_title
     ) {
-      const { data: inc } = await supabase.from("incidents").insert({
-        title: args.payload.incident_title,
-        description: args.payload.incident_description || null,
-        location: args.payload.incident_location || null,
-        severity: args.payload.incident_severity || "medium",
-        status: "open",
-        reporter_name: msg.sender_name,
-        reporter_staff_id: msg.sender_staff_id,
-        source_message_id: msg.id,
-      }).select("id").single();
-      autoExecuted = true;
-      createdEntityId = inc?.id || null;
-      createdEntityType = "incident";
+      const severity = args.payload?.incident_severity || "medium";
+      const shouldAutoCreate = severity !== "high";
 
-      await supabase.from("notifications").insert({
-        type: "incident",
-        title: `🔔 Инцидент: ${args.payload.incident_title}`,
-        body: `${args.payload.incident_location || ""} — ${msg.sender_name}`,
-        recipient_role: "director",
-        related_entity: "incident",
-        related_id: inc?.id || null,
-      });
+      if (shouldAutoCreate) {
+        const { data: inc } = await supabase.from("incidents").insert({
+          title: args.payload.incident_title,
+          description: args.payload.incident_description || null,
+          location: args.payload.incident_location || null,
+          severity,
+          status: "open",
+          reporter_name: msg.sender_name,
+          reporter_staff_id: msg.sender_staff_id,
+          source_message_id: msg.id,
+        }).select("id").single();
+        autoExecuted = true;
+        createdEntityId = inc?.id || null;
+        createdEntityType = "incident";
+
+        // Notify director on dashboard
+        await supabase.from("notifications").insert({
+          type: "incident",
+          title: `🔔 Инцидент: ${args.payload.incident_title}`,
+          body: `${args.payload.incident_location ? args.payload.incident_location + " — " : ""}${msg.sender_name}`,
+          recipient_role: "director",
+          related_entity: "incident",
+          related_id: inc?.id || null,
+        });
+      }
     }
 
-    // Memory shortcut: if AI confidently applied a past approved pattern, auto-execute even risky ones
+    // Memory shortcut: if AI confidently applied a past approved pattern
     const memoryAutoApprove =
       args.memory_applied && args.confidence >= 0.85 && args.action_type !== "none";
 
     if (memoryAutoApprove && !autoExecuted) {
-      // Bump usage_count on the matching memory row
-      await supabase.rpc("noop").catch(() => {});
       const { data: existing } = await supabase
         .from("ai_memory")
         .select("id, usage_count")
@@ -352,11 +356,12 @@ ${memoryList}
       }
     }
 
-    // Queue pending action (skip chitchat / none / already auto-attendance)
+    // Queue pending action for director (skip: chitchat, none, already executed attendance)
     if (
       args.action_type !== "none" &&
       args.intent !== "chitchat" &&
-      !(autoExecuted && args.action_type === "log_attendance")
+      !(autoExecuted && args.action_type === "log_attendance") &&
+      !(autoExecuted && args.action_type === "create_incident")
     ) {
       const status = autoExecuted || memoryAutoApprove ? "executed" : "pending";
       const { data: pa } = await supabase.from("pending_actions").insert({
@@ -369,17 +374,24 @@ ${memoryList}
           memory_applied: args.memory_applied,
           chat_room: msg.chat_room,
         },
-        ai_summary: args.ai_reply,
+        ai_summary: args.should_reply && args.ai_reply ? args.ai_reply : `${args.intent}: ${msg.text.slice(0, 100)}`,
         ai_reasoning: `Intent: ${args.intent}, confidence: ${args.confidence}${
           args.memory_applied ? " — applied learned pattern" : ""
         }`,
         status,
       }).select("id").single();
 
+      // Notify director only for pending (needs decision)
       if (status === "pending") {
+        const notifTitle = args.intent === "teacher_absence"
+          ? `👤 Учитель отсутствует: требуется замена`
+          : args.intent === "incident"
+          ? `🚨 Инцидент требует решения`
+          : `📋 Требуется решение директора`;
+
         await supabase.from("notifications").insert({
           type: args.intent === "incident" ? "incident" : "task",
-          title: `🤖 Требуется решение: ${args.intent}`,
+          title: notifTitle,
           body: args.ai_reply || `От ${msg.sender_name}`,
           recipient_role: "director",
           related_entity: "pending_action",
@@ -388,6 +400,7 @@ ${memoryList}
       }
     }
 
+    // Mark message as processed
     await supabase
       .from("chat_messages")
       .update({ processed: true, language: args.language })
@@ -399,7 +412,7 @@ ${memoryList}
         intent: args.intent,
         autoExecuted,
         memoryApplied: args.memory_applied,
-        ai_reply: args.ai_reply,
+        repliedInChat: args.should_reply && !!args.ai_reply,
         createdEntityType,
         createdEntityId,
       }),
