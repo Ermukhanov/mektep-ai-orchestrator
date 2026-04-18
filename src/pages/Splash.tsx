@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -10,13 +11,27 @@ export default function Splash() {
 
   useEffect(() => {
     const seenLang = localStorage.getItem("mektep_lang");
-    const user = localStorage.getItem("mektep_user");
-    const timer = setTimeout(() => {
-      if (user) navigate("/app/dashboard");
-      else if (seenLang) navigate("/auth");
-      else navigate("/language");
-    }, 2200);
-    return () => clearTimeout(timer);
+
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setTimeout(() => {
+          if (session) {
+            navigate("/app/dashboard");
+          } else if (seenLang) {
+            navigate("/auth");
+          } else {
+            navigate("/language");
+          }
+        }, 2200);
+      } catch {
+        setTimeout(() => {
+          navigate(seenLang ? "/auth" : "/language");
+        }, 2200);
+      }
+    };
+
+    checkSession();
   }, [navigate]);
 
   return (
