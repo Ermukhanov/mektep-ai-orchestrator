@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import AppShell from "./components/AppShell";
 import Dashboard from "./pages/Dashboard";
+import Inbox from "./pages/Inbox";
 import Schedule from "./pages/Schedule";
 import Legal from "./pages/Legal";
 import Notifications from "./pages/Notifications";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/app" element={<AppShell />}>
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="inbox" element={<Inbox />} />
               <Route path="schedule" element={<Schedule />} />
               <Route path="legal" element={<Legal />} />
               <Route path="notifications" element={<Notifications />} />
