@@ -106,7 +106,7 @@ export default function Profile() {
               <div className="font-semibold">WhatsApp (GREEN-API)</div>
               <div className="text-xs text-muted-foreground">MEKTEP AI отвечает напрямую в WhatsApp</div>
             </div>
-            <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-600 border border-green-500/30">подключено</span>
+            <span className="text-xs px-2 py-1 rounded-full bg-accent-soft text-accent border border-accent/30">подключено</span>
           </div>
           <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
             <div>
