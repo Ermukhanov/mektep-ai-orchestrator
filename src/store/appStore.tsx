@@ -59,6 +59,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  // Global auto-parser: whenever ANY new human chat message lands, kick MEKTEP AI.
+  // This makes the AI feel like it "lives" inside the chat — reading and replying instantly.
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase
+      .channel("mektep-ai-autoparse")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "chat_messages" },
+        (payload: any) => {
+          const m = payload.new;
+          if (!m || m.processed || m.source === "ai") return;
+          // Fire and forget — backend handles dedupe via `processed` flag.
+          supabase.functions
+            .invoke("parse-chat", { body: { message_id: m.id } })
+            .catch((e) => console.error("auto parse-chat failed", e));
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [user]);
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
