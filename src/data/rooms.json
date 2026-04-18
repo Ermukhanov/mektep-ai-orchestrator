@@ -1,0 +1,178 @@
+[
+  {
+    "room": "110",
+    "floor": 1,
+    "capacity": 22,
+    "home_class": "11A",
+    "owner": null,
+    "subject": null
+  },
+  {
+    "room": "109",
+    "floor": 1,
+    "capacity": 22,
+    "home_class": "11B",
+    "owner": "Жоламан Мейрамбек",
+    "subject": "математика"
+  },
+  {
+    "room": "107",
+    "floor": 1,
+    "capacity": null,
+    "home_class": null,
+    "owner": null,
+    "subject": "робототехника"
+  },
+  {
+    "room": "104",
+    "floor": 1,
+    "capacity": null,
+    "home_class": null,
+    "owner": "Сарин Еркін",
+    "subject": "информатика"
+  },
+  {
+    "room": "201",
+    "floor": 2,
+    "capacity": 21,
+    "home_class": null,
+    "owner": "Назаров Дастан",
+    "subject": "химия"
+  },
+  {
+    "room": "203",
+    "floor": 2,
+    "capacity": 21,
+    "home_class": null,
+    "owner": "Қайырқұлов Нұрсұлтан",
+    "subject": "биология"
+  },
+  {
+    "room": "204",
+    "floor": 2,
+    "capacity": 36,
+    "home_class": "10A",
+    "owner": "Даулетбаева Сая",
+    "subject": "математика"
+  },
+  {
+    "room": "205",
+    "floor": 2,
+    "capacity": 22,
+    "home_class": "7A",
+    "owner": "Есалина Айзада",
+    "subject": "математика"
+  },
+  {
+    "room": "206",
+    "floor": 2,
+    "capacity": 22,
+    "home_class": "7B",
+    "owner": "Нажмадинов Марат",
+    "subject": "математика"
+  },
+  {
+    "room": "209",
+    "floor": 2,
+    "capacity": 21,
+    "home_class": "7C",
+    "owner": "Сулейманов Бегдулла\nСунгариева Айгерим",
+    "subject": "физика"
+  },
+  {
+    "room": "210",
+    "floor": 2,
+    "capacity": 22,
+    "home_class": "10B",
+    "owner": "Караева Аружан",
+    "subject": "биология"
+  },
+  {
+    "room": "211",
+    "floor": 2,
+    "capacity": 22,
+    "home_class": null,
+    "owner": "Аманғазы Сәнім",
+    "subject": "химия"
+  },
+  {
+    "room": "301",
+    "floor": 3,
+    "capacity": 24,
+    "home_class": "8D",
+    "owner": "Бактыгулов Аманжол",
+    "subject": "қазақ-тілі"
+  },
+  {
+    "room": "302",
+    "floor": 3,
+    "capacity": 25,
+    "home_class": "9A",
+    "owner": null,
+    "subject": "қазақ-тілі"
+  },
+  {
+    "room": "303",
+    "floor": 3,
+    "capacity": 25,
+    "home_class": "8A",
+    "owner": null,
+    "subject": "орыс-тілі"
+  },
+  {
+    "room": "304",
+    "floor": 3,
+    "capacity": 25,
+    "home_class": "8B",
+    "owner": "Ақырап Ақерке",
+    "subject": "ағылшын"
+  },
+  {
+    "room": "305",
+    "floor": 3,
+    "capacity": 24,
+    "home_class": "8C",
+    "owner": "Таңатар Мадина",
+    "subject": "ағылшын"
+  },
+  {
+    "room": "306",
+    "floor": 3,
+    "capacity": 28,
+    "home_class": "9B",
+    "owner": "Балтабай Жанболат",
+    "subject": "тарих"
+  },
+  {
+    "room": "307",
+    "floor": 3,
+    "capacity": null,
+    "home_class": null,
+    "owner": "Қойшан Ырысжан",
+    "subject": "көркем еңбек"
+  },
+  {
+    "room": "309",
+    "floor": 3,
+    "capacity": 23,
+    "home_class": null,
+    "owner": "Жадырасын Ернұр",
+    "subject": "география"
+  },
+  {
+    "room": "310",
+    "floor": 3,
+    "capacity": 25,
+    "home_class": null,
+    "owner": "Қангерей Қанат",
+    "subject": "құқық"
+  },
+  {
+    "room": "311",
+    "floor": 3,
+    "capacity": 22,
+    "home_class": null,
+    "owner": "Утенова Куралай",
+    "subject": "қазақ-тілі"
+  }
+]
