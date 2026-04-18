@@ -1,76 +1,73 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { FeedMessage, INITIAL_FEED, MORE_MESSAGES, NOTIFICATIONS, Notification } from "@/lib/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
-export type UserRole = "director" | "teacher";
-export interface UserProfile {
-  name: string;
-  role: UserRole;
-  subject: string;
-  email: string;
-}
+export type UserRole = "director" | "teacher" | "staff";
 
-export interface Task {
-  id: string;
-  title: string;
-  assignee: string;
-  createdAt: string;
+export interface Profile {
+  user_id: string;
+  full_name: string;
+  language: string;
+  staff_id: string | null;
 }
 
 interface AppState {
-  user: UserProfile | null;
-  setUser: (u: UserProfile | null) => void;
-  feed: FeedMessage[];
-  tasks: Task[];
-  addTask: (t: Task) => void;
-  notifications: Notification[];
-  markAllRead: () => void;
-  unreadCount: number;
+  user: User | null;
+  profile: Profile | null;
+  role: UserRole | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 const Ctx = createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [user, setUserState] = useState<UserProfile | null>(() => {
-    const raw = localStorage.getItem("mektep_user");
-    return raw ? JSON.parse(raw) : null;
-  });
-  const [feed, setFeed] = useState<FeedMessage[]>(INITIAL_FEED);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>(NOTIFICATIONS);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [role, setRole] = useState<UserRole | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const setUser = (u: UserProfile | null) => {
-    setUserState(u);
-    if (u) localStorage.setItem("mektep_user", JSON.stringify(u));
-    else localStorage.removeItem("mektep_user");
+  const loadProfile = async (uid: string) => {
+    const [{ data: prof }, { data: roleRow }] = await Promise.all([
+      supabase.from("profiles").select("user_id, full_name, language, staff_id").eq("user_id", uid).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", uid).order("role").limit(1).maybeSingle(),
+    ]);
+    setProfile(prof || null);
+    setRole((roleRow?.role as UserRole) || null);
   };
 
-  // Simulated incoming messages
+  const refresh = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    setUser(session?.user || null);
+    if (session?.user) await loadProfile(session.user.id);
+  };
+
   useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < MORE_MESSAGES.length) {
-        setFeed((f) => [...f, MORE_MESSAGES[i]]);
-        i++;
+    // Subscribe FIRST, then check session
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+      if (session?.user) {
+        // defer DB call to avoid deadlock
+        setTimeout(() => loadProfile(session.user.id), 0);
       } else {
-        clearInterval(interval);
+        setProfile(null);
+        setRole(null);
       }
-    }, 8000);
-    return () => clearInterval(interval);
+    });
+    refresh().finally(() => setLoading(false));
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  const addTask = (t: Task) => {
-    setTasks((prev) => [t, ...prev]);
-    setNotifications((prev) => [
-      { id: `nt-${t.id}`, type: "task", title: "Task Created", desc: `${t.assignee} — ${t.title}`, time: "just now", read: false },
-      ...prev,
-    ]);
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+    setRole(null);
   };
 
-  const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
   return (
-    <Ctx.Provider value={{ user, setUser, feed, tasks, addTask, notifications, markAllRead, unreadCount }}>
+    <Ctx.Provider value={{ user, profile, role, loading, signOut, refresh }}>
       {children}
     </Ctx.Provider>
   );

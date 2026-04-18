@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { useApp } from "@/store/appStore";
+import { supabase } from "@/integrations/supabase/client";
 
 const VALID_SCHOOL_ID = "AQB-2026";
 
@@ -20,21 +20,19 @@ const schema = z.object({
   schoolId: z.string().trim().min(1, "Required"),
   email: z.string().trim().email("Invalid email").max(255),
   password: z.string().min(6, "Min 6 characters").max(100),
-  name: z.string().trim().max(100).optional(),
+  fullName: z.string().trim().max(100).optional(),
 });
-
 type FormData = z.infer<typeof schema>;
 
 export default function Auth() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { setUser } = useApp();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { schoolId: "AQB-2026", email: "director@aqbobek.kz", password: "demo123" },
+    defaultValues: { schoolId: "AQB-2026", email: "", password: "" },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -43,23 +41,36 @@ export default function Auth() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-
-    if (mode === "register") {
-      // store partial profile, push into onboarding
-      localStorage.setItem("mektep_pending_email", data.email);
-      navigate("/onboarding");
-    } else {
-      // mock login: skip onboarding
-      setUser({
-        name: "Aizhan Konayeva",
-        role: "director",
-        subject: "Administration",
-        email: data.email,
-      });
-      toast.success("Welcome back!");
-      navigate("/app/dashboard");
+    try {
+      if (mode === "register") {
+        const { error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/app/dashboard`,
+            data: {
+              full_name: data.fullName || "",
+              language: i18n.language,
+              role: "director", // first user → director by default
+            },
+          },
+        });
+        if (error) throw error;
+        toast.success(t("auth.checkEmail"));
+        navigate("/onboarding");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+        if (error) throw error;
+        toast.success(t("auth.welcome"));
+        navigate("/app/dashboard");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Auth error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,11 +82,7 @@ export default function Auth() {
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="bg-card border border-border rounded-3xl shadow-elegant p-8">
             <div className="flex gap-2 p-1 bg-secondary rounded-xl mb-6">
               {(["login", "register"] as const).map((m) => (
@@ -92,13 +99,7 @@ export default function Auth() {
             </div>
 
             <AnimatePresence mode="wait">
-              <motion.div
-                key={mode}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-              >
+              <motion.div key={mode} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}>
                 <h2 className="font-display text-2xl font-bold mb-1">
                   {mode === "login" ? t("auth.welcome") : t("auth.createAccount")}
                 </h2>
@@ -113,6 +114,12 @@ export default function Auth() {
                     <Input id="schoolId" placeholder={t("auth.schoolIdHint")} {...register("schoolId")} />
                     {errors.schoolId && <p className="text-xs text-destructive mt-1">{errors.schoolId.message}</p>}
                   </div>
+                  {mode === "register" && (
+                    <div>
+                      <Label htmlFor="fullName" className="mb-1.5 block">{t("auth.fullName")}</Label>
+                      <Input id="fullName" {...register("fullName")} />
+                    </div>
+                  )}
                   <div>
                     <Label htmlFor="email" className="mb-1.5 block">{t("auth.email")}</Label>
                     <Input id="email" type="email" {...register("email")} />
@@ -140,7 +147,7 @@ export default function Auth() {
           </div>
 
           <p className="text-center text-xs text-muted-foreground mt-6">
-            Demo School ID: <span className="font-mono text-foreground">AQB-2026</span>
+            School ID: <span className="font-mono text-foreground">AQB-2026</span>
           </p>
         </motion.div>
       </div>
