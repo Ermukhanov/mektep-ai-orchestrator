@@ -13,6 +13,7 @@ import Onboarding from "./pages/Onboarding";
 import AppShell from "./components/AppShell";
 import Dashboard from "./pages/Dashboard";
 import Inbox from "./pages/Inbox";
+import Chats from "./pages/Chats";
 import Schedule from "./pages/Schedule";
 import Legal from "./pages/Legal";
 import Notifications from "./pages/Notifications";
