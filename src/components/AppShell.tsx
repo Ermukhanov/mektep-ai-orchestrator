@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Calendar, Scale, Bell, LogOut, Inbox } from "lucide-react";
+import { LayoutDashboard, Calendar, Scale, Bell, LogOut, Inbox, MessageSquare } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useApp } from "@/store/appStore";
