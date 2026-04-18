@@ -53,7 +53,7 @@ export default function Profile() {
         <div className="h-24 gradient-primary" />
         <CardContent className="pt-0">
           <div className="flex items-end gap-4 -mt-12 mb-6">
-            <div className="h-24 w-24 rounded-2xl bg-card border-4 border-card shadow-soft flex items-center justify-center text-3xl font-bold text-primary">
+            <div className="h-24 w-24 rounded-2xl bg-card border-4 border-card shadow-soft flex items-center justify-center font-display text-3xl font-bold text-primary">
               {initials}
             </div>
             <div className="pb-2">
