@@ -1,5 +1,7 @@
-// Director approves or rejects a pending_action; we then execute it,
-// post the AI reply back to chat (in original language), and notify everyone.
+// Director approves/rejects pending_action.
+// On execute: runs the action, posts AI reply to original chat_room,
+// creates schedule_overrides for substitutions ("windows" or replacements),
+// and SAVES the decision to ai_memory so MEKTEP AI learns.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -21,7 +23,6 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: auth } } },
     );
 
-    // Identify caller
     const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!,
@@ -43,7 +44,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { action_id, decision } = await req.json();
+    const { action_id, decision, director_note } = await req.json();
     if (!action_id || !["approve", "reject"].includes(decision)) {
       return new Response(JSON.stringify({ error: "bad input" }), {
         status: 400,
@@ -58,22 +59,36 @@ Deno.serve(async (req) => {
       .single();
     if (!action) return new Response("not found", { status: 404, headers: corsHeaders });
 
+    const p = action.payload || {};
+    const patternKey = p.pattern_key || `${action.action_type}_generic`;
+
+    // ============ REJECT ============
     if (decision === "reject") {
       await supabase
         .from("pending_actions")
         .update({ status: "rejected", decided_by: user.id, decided_at: new Date().toISOString() })
         .eq("id", action_id);
+
+      // Save rejection to memory so AI doesn't propose the same again
+      await supabase.from("ai_memory").insert({
+        pattern_type: action.action_type,
+        pattern_key: patternKey,
+        context: { ai_summary: action.ai_summary, payload: p },
+        decision: { rejected: true },
+        outcome: "rejected",
+        director_note: director_note || null,
+      });
+
       return new Response(JSON.stringify({ ok: true, status: "rejected" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const p = action.payload || {};
+    // ============ APPROVE / EXECUTE ============
     let result: Record<string, unknown> = {};
 
     try {
       if (action.action_type === "mark_teacher_absent") {
-        // 1) find staff
         const { data: staff } = await supabase
           .from("staff")
           .select("id, full_name")
@@ -94,9 +109,15 @@ Deno.serve(async (req) => {
           .select()
           .single();
 
-        // 2) find that day's slots & propose substitutes
+        const subsCreated: any[] = [];
+        const overridesCreated: any[] = [];
+
         if (staff?.id) {
-          const dayName = new Date(absDate).toLocaleDateString("en-US", { weekday: "short" }).toLowerCase().slice(0, 3);
+          const dayName = new Date(absDate)
+            .toLocaleDateString("en-US", { weekday: "short" })
+            .toLowerCase()
+            .slice(0, 3);
+
           const { data: slots } = await supabase
             .from("schedule_slots")
             .select("*")
@@ -104,38 +125,85 @@ Deno.serve(async (req) => {
             .eq("day_of_week", dayName);
 
           for (const slot of slots || []) {
-            // find a free same-subject teacher
             const { data: busy } = await supabase
               .from("schedule_slots")
               .select("teacher_id")
               .eq("day_of_week", dayName)
               .eq("period", slot.period);
             const busyIds = new Set((busy || []).map((b) => b.teacher_id).filter(Boolean));
+
             const { data: candidates } = await supabase
               .from("staff")
               .select("id, full_name, subjects")
               .neq("id", staff.id)
               .eq("is_active", true);
-            const sub = (candidates || []).find(
+
+            const subjMatch = (candidates || []).find(
               (c) =>
                 !busyIds.has(c.id) &&
-                c.subjects?.some((s: string) => slot.subject_norm?.includes(s.toLowerCase())),
-            ) || (candidates || []).find((c) => !busyIds.has(c.id));
+                c.subjects?.some((s: string) =>
+                  slot.subject_norm?.includes(s.toLowerCase()),
+                ),
+            );
+            const anyFree = (candidates || []).find((c) => !busyIds.has(c.id));
+            const sub = subjMatch || anyFree;
+
             if (sub) {
-              await supabase.from("substitutions").insert({
-                slot_id: slot.id,
-                absence_id: absence?.id,
-                substitute_staff_id: sub.id,
-                for_date: absDate,
-                status: "suggested",
-                ai_reasoning: `Free at period ${slot.period}; subject match: ${
-                  sub.subjects?.some((x: string) => slot.subject_norm?.includes(x.toLowerCase())) ? "yes" : "no"
-                }`,
-              });
+              const { data: subRow } = await supabase
+                .from("substitutions")
+                .insert({
+                  slot_id: slot.id,
+                  absence_id: absence?.id,
+                  substitute_staff_id: sub.id,
+                  for_date: absDate,
+                  status: "approved",
+                  ai_reasoning: `Free at period ${slot.period}; subject match: ${
+                    subjMatch ? "yes" : "no — fallback to any free teacher"
+                  }`,
+                })
+                .select()
+                .single();
+              subsCreated.push(subRow);
+
+              // Create schedule override so the live timetable shows the change
+              const { data: ov } = await supabase
+                .from("schedule_overrides")
+                .insert({
+                  slot_id: slot.id,
+                  override_date: absDate,
+                  override_type: "teacher_change",
+                  new_teacher_id: sub.id,
+                  note: `Замена: ${staff.full_name} → ${sub.full_name}`,
+                  created_by: user.id,
+                  ai_generated: true,
+                  related_substitution_id: subRow?.id,
+                })
+                .select()
+                .single();
+              overridesCreated.push(ov);
+            } else {
+              // No substitute available → mark as free period ("окно")
+              const { data: ov } = await supabase
+                .from("schedule_overrides")
+                .insert({
+                  slot_id: slot.id,
+                  override_date: absDate,
+                  override_type: "free_period",
+                  note: `Окно: ${staff.full_name} отсутствует, замена не найдена`,
+                  created_by: user.id,
+                  ai_generated: true,
+                })
+                .select()
+                .single();
+              overridesCreated.push(ov);
             }
           }
         }
-        result = { absence_id: absence?.id };
+        result = {
+          absence_id: absence?.id,
+          substitutions: subsCreated.length,
+          overrides: overridesCreated.length,
+        };
       } else if (action.action_type === "create_incident") {
         const { data: inc } = await supabase
           .from("incidents")
@@ -151,7 +219,7 @@ Deno.serve(async (req) => {
         result = { incident_id: inc?.id };
         await supabase.from("notifications").insert({
           type: "incident",
-          title: "New incident",
+          title: "Новый инцидент",
           body: p.incident_title,
           recipient_role: "director",
           related_entity: "incidents",
@@ -165,10 +233,6 @@ Deno.serve(async (req) => {
               .ilike("full_name", `%${p.task_assignee_name}%`)
               .maybeSingle()
           : { data: null };
-        const { data: task } = await supabase
-          .from("tasks")
-          .select()
-          .limit(0); // noop
         const { data: created } = await supabase
           .from("tasks")
           .insert({
@@ -182,19 +246,48 @@ Deno.serve(async (req) => {
           .select()
           .single();
         result = { task_id: created?.id };
-      } else if (action.action_type === "send_chat_reply" || action.action_type === "log_attendance") {
-        // nothing extra to do; reply is handled below
       }
 
-      // Post AI reply back to the chat in user's language (already in ai_summary)
+      // Post confirmation reply to the same chat_room
       if (action.ai_summary) {
+        const { data: srcMsg } = action.source_message_id
+          ? await supabase.from("chat_messages").select("chat_room").eq("id", action.source_message_id).maybeSingle()
+          : { data: null };
         await supabase.from("chat_messages").insert({
-          text: action.ai_summary,
+          text: `✓ ${action.ai_summary} — одобрено директором.`,
           sender_name: "MEKTEP AI",
-          sender_user_id: user.id, // bypass RLS check (director)
           source: "ai",
+          chat_room: srcMsg?.chat_room || p.chat_room || "general",
           processed: true,
           language: p.language || null,
+          metadata: { confirmation: true },
+        });
+      }
+
+      // SAVE TO AI MEMORY ✨
+      const { data: existingMem } = await supabase
+        .from("ai_memory")
+        .select("id, usage_count")
+        .eq("pattern_key", patternKey)
+        .eq("outcome", "approved")
+        .maybeSingle();
+      if (existingMem) {
+        await supabase
+          .from("ai_memory")
+          .update({
+            usage_count: (existingMem.usage_count || 1) + 1,
+            last_used_at: new Date().toISOString(),
+            director_note: director_note || undefined,
+          })
+          .eq("id", existingMem.id);
+      } else {
+        await supabase.from("ai_memory").insert({
+          pattern_type: action.action_type,
+          pattern_key: patternKey,
+          context: { ai_summary: action.ai_summary, payload: p },
+          decision: { approved: true, result },
+          outcome: "approved",
+          director_note: director_note || null,
         });
       }
 

@@ -11,3 +11,9 @@ verify_jwt = true
 
 [functions.legal-chat]
 verify_jwt = false
+
+[functions.tg-webhook]
+verify_jwt = false
+
+[functions.wa-webhook]
+verify_jwt = false
