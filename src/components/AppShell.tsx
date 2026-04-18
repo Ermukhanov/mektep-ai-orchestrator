@@ -18,9 +18,11 @@ export default function AppShell() {
   const [unread, setUnread] = useState(0);
   const [pending, setPending] = useState(0);
 
+  // Only redirect if loading is done AND no user
   useEffect(() => {
-    if (loading) return;
-    if (!user) navigate("/auth");
+    if (!loading && !user) {
+      navigate("/auth", { replace: true });
+    }
   }, [user, loading, navigate]);
 
   useEffect(() => {
@@ -41,7 +43,14 @@ export default function AppShell() {
     return () => { supabase.removeChannel(ch); };
   }, [user]);
 
-  if (loading || !user) return null;
+  // Show nothing while loading or if no user (will redirect)
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="h-8 w-8 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+    </div>
+  );
+  
+  if (!user) return null;
 
   const navItems = [
     { to: "/app/dashboard", icon: LayoutDashboard, label: t("nav.dashboard") },
@@ -54,11 +63,11 @@ export default function AppShell() {
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/auth");
+    navigate("/auth", { replace: true });
   };
 
   const displayName = profile?.full_name || user.email || "User";
-  const initials = displayName.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+  const initials = displayName.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase();
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -106,7 +115,7 @@ export default function AppShell() {
 
       <nav className="md:hidden fixed bottom-0 inset-x-0 bg-card border-t border-border z-40">
         <div className="grid grid-cols-5 h-16">
-          {navItems.map((item) => (
+          {navItems.slice(0, 5).map((item) => (
             <NavLink key={item.to} to={item.to}
               className={({ isActive }) => `flex flex-col items-center justify-center gap-1 text-[10px] transition-smooth relative ${isActive ? "text-accent" : "text-muted-foreground"}`}>
               <div className="relative">
