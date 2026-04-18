@@ -46,6 +46,7 @@ export default function AppShell() {
   const navItems = [
     { to: "/app/dashboard", icon: LayoutDashboard, label: t("nav.dashboard") },
     { to: "/app/inbox", icon: Inbox, label: t("nav.inbox"), badge: pending },
+    { to: "/app/chats", icon: MessageSquare, label: t("nav.chats", "Чаты") },
     { to: "/app/schedule", icon: Calendar, label: t("nav.schedule") },
     { to: "/app/legal", icon: Scale, label: t("nav.legal") },
     { to: "/app/notifications", icon: Bell, label: t("nav.notifications"), badge: unread },
