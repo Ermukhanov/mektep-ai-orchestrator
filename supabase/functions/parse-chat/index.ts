@@ -1,220 +1,230 @@
-// MEKTEP AI — reads every chat message, applies learned patterns from ai_memory,
-// replies ONLY for critical events (teacher absence, high-severity incidents),
-// always creates incidents/tasks on dashboard, notifies director.
+// MEKTEP AI — Ultra-Fast Schedule Generator v2
+// Uses parallel tool calls + pre-built constraint model
+// Target: < 10 seconds generation with lens (stream) support
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `Ты — MEKTEP AI, цифровой завуч школы «Ақбөбек».
+const DAYS_EN = ["mon", "tue", "wed", "thu", "fri"];
+const DAYS_RU = ["понедельник", "вторник", "среда", "четверг", "пятница"];
+const DAYS_KZ = ["дүйсенбі", "сейсенбі", "сәрсенбі", "бейсенбі", "жұма"];
 
-ТВОЯ ГЛАВНАЯ ЗАДАЧА:
-1. Понять намерение сообщения и извлечь данные
-2. Зафиксировать всё важное в системе (посещаемость, инциденты, задачи)
-3. Отвечать в чате ТОЛЬКО в критических случаях — не засорять чат
+function detectDay(text: string): string {
+  const t = text.toLowerCase();
+  for (let i = 0; i < 5; i++) {
+    if (t.includes(DAYS_KZ[i]) || t.includes(DAYS_RU[i]) || t.includes(DAYS_EN[i])) return DAYS_EN[i];
+  }
+  const d = new Date().getDay();
+  return DAYS_EN[Math.max(0, Math.min(4, d === 0 ? 0 : d - 1))];
+}
 
-КОГДА ОТВЕЧАТЬ В ЧАТ (should_reply = true):
-✓ Учитель сообщает о СВОЕЙ болезни / отсутствии
-✓ Инцидент с severity = high (ЧП, травма, пожар, серьёзная поломка)
-✓ Сообщение требует срочного подтверждения директора
+// Compact system prompt optimized for speed
+const SYSTEM = `You are MEKTEP AI schedule generator. Build a COMPLETE school timetable in ONE response.
 
-КОГДА НЕ ОТВЕЧАТЬ (should_reply = false):
-✗ Обычный отчёт по посещаемости — просто фиксируем молча
-✗ Приветствия, болтовня
-✗ Вопросы без срочности
-✗ Инциденты low/medium — создаём задачу, директор увидит в панели
-✗ Любое рутинное сообщение
+RULES (strictly enforce):
+1. No teacher in 2+ classes simultaneously  
+2. No room used by 2+ classes simultaneously
+3. Each class gets 5-7 lessons starting from period 1, no gaps
+4. Hard subjects (math, physics, chemistry) → periods 1-4
+5. PE, art → periods 5-7
+6. Max 6 lessons/teacher/day
 
-СТИЛЬ ОТВЕТА (когда всё же отвечаем):
-• На том же языке что и сообщение (kk / ru / en)
-• Официальный, деловой тон
-• 1–2 предложения максимум, до 200 символов
-• Начинать с: ✓ (подтверждение) или 🔔 (срочно)
-• "Передано директору" / "Директорға жіберілді"
+LENS SYSTEM (critical feature):
+- When classes share a parallel (same grade, e.g. 7A+7B+7C), they can have "lens" slots
+- In a lens slot, all parallel classes are free at the SAME period
+- Students from parallel classes regroup into level-based groups (Beginner/Intermediate/Advanced)
+- Mark lens slots with is_lens:true, lens_group: "english_7" etc.
+- Assign different teachers to each lens group in same period
 
-INTENT классификация:
-- attendance_report   → посещаемость класса (НЕ отвечаем)
-- teacher_absence     → учитель болен/отсутствует (ОТВЕЧАЕМ)
-- student_absence     → ученик не пришёл (НЕ отвечаем)
-- incident            → проблема/поломка (отвечаем ТОЛЬКО если high)
-- task_request        → просьба что-то сделать (НЕ отвечаем, создаём задачу)
-- question            → вопрос (НЕ отвечаем в чат)
-- chitchat            → приветствие (НЕ отвечаем)
+Return ONLY the build_schedule tool call. Be fast and complete.`;
 
-Возвращай ТОЛЬКО tool call propose_action.`;
-
-function tools() {
-  return [
-    {
-      type: "function",
-      function: {
-        name: "propose_action",
-        description: "Decide what MEKTEP AI should do with this message.",
-        parameters: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            language: { type: "string", enum: ["kk", "ru", "en"] },
-            intent: {
-              type: "string",
-              enum: [
-                "attendance_report",
-                "teacher_absence",
-                "student_absence",
-                "incident",
-                "task_request",
-                "question",
-                "chitchat",
-              ],
-            },
-            confidence: { type: "number", minimum: 0, maximum: 1 },
-            should_reply: {
-              type: "boolean",
-              description: "Only true for teacher_absence or high-severity incidents. False for routine messages.",
-            },
-            ai_reply: {
-              type: "string",
-              description: "Short reply ONLY if should_reply=true. Empty string otherwise.",
-            },
-            requires_approval: { type: "boolean" },
-            memory_applied: { type: "boolean" },
-            pattern_key: { type: "string" },
-            action_type: {
-              type: "string",
-              enum: [
-                "none",
-                "log_attendance",
-                "mark_teacher_absent",
-                "create_incident",
-                "create_task",
-                "send_chat_reply",
-              ],
-            },
-            payload: {
+function buildTools() {
+  return [{
+    type: "function",
+    function: {
+      name: "build_schedule",
+      parameters: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          day_of_week: { type: "string", enum: DAYS_EN },
+          slots: {
+            type: "array",
+            items: {
               type: "object",
+              additionalProperties: false,
               properties: {
                 class_name: { type: "string" },
-                present: { type: "number" },
-                absent: { type: "number" },
-                absent_reason: { type: "string" },
-                staff_name: { type: "string" },
-                absence_reason: { type: "string" },
-                absence_date: { type: "string" },
-                incident_title: { type: "string" },
-                incident_description: { type: "string" },
-                incident_location: { type: "string" },
-                incident_severity: {
-                  type: "string",
-                  enum: ["low", "medium", "high"],
-                },
-                task_title: { type: "string" },
-                task_description: { type: "string" },
-                task_assignee_name: { type: "string" },
+                period: { type: "number" },
+                subject: { type: "string" },
+                teacher: { type: "string" },
+                room: { type: "string" },
+                is_lens: { type: "boolean" },
+                lens_group: { type: "string" },
+                lens_level: { type: "string", enum: ["beginner", "pre_intermediate", "intermediate", "upper", ""] },
               },
+              required: ["class_name", "period", "subject", "teacher", "room"],
             },
           },
-          required: [
-            "language",
-            "intent",
-            "confidence",
-            "should_reply",
-            "ai_reply",
-            "requires_approval",
-            "memory_applied",
-            "pattern_key",
-            "action_type",
-            "payload",
-          ],
+          lens_blocks: {
+            type: "array",
+            description: "Cross-class streaming blocks",
+            items: {
+              type: "object",
+              properties: {
+                period: { type: "number" },
+                parallel: { type: "string" },
+                subject: { type: "string" },
+                groups: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      level: { type: "string" },
+                      teacher: { type: "string" },
+                      room: { type: "string" },
+                      classes_included: { type: "array", items: { type: "string" } },
+                    },
+                    required: ["level", "teacher", "room", "classes_included"],
+                  },
+                },
+              },
+              required: ["period", "parallel", "subject", "groups"],
+            },
+          },
+          conflicts: { type: "array", items: { type: "string" } },
+          ai_notes: { type: "string" },
         },
+        required: ["day_of_week", "slots", "conflicts", "ai_notes"],
       },
     },
-  ];
+  }];
+}
+
+// Build a compact constraint string for the AI
+function buildConstraintString(load: any[], rooms: any[], periods: any[], staff: any[], classes: any[]): string {
+  const classNames = classes?.map(c => c.name).join(", ") || "";
+  
+  // Group load by teacher for compact representation
+  const byTeacher = new Map<string, string[]>();
+  for (const l of load || []) {
+    const key = l.teacher_name;
+    if (!byTeacher.has(key)) byTeacher.set(key, []);
+    byTeacher.get(key)!.push(`${l.class_name}:${l.subject}(${l.hours_per_week}h/w)`);
+  }
+  
+  const teacherStr = Array.from(byTeacher.entries())
+    .map(([t, items]) => `${t}→${items.join(",")}`)
+    .join("\n");
+  
+  const roomStr = (rooms || [])
+    .map(r => `${r.number}(cap:${r.capacity || "?"}${r.subject ? ",spec:" + r.subject : ""})`)
+    .join(",");
+  
+  const periodStr = (periods || [])
+    .map(p => `${p.period_number}:${p.time_label}`)
+    .join(",");
+
+  // Detect parallels for lens blocks
+  const parallelMap = new Map<string, string[]>();
+  for (const c of classes || []) {
+    const grade = c.name.replace(/[A-Za-zА-Яа-яЁё]/g, "");
+    if (!parallelMap.has(grade)) parallelMap.set(grade, []);
+    parallelMap.get(grade)!.push(c.name);
+  }
+  const lensParallels = Array.from(parallelMap.entries())
+    .filter(([, cls]) => cls.length >= 2)
+    .map(([grade, cls]) => `Grade${grade}:[${cls.join(",")}]`)
+    .join("; ");
+
+  return `CLASSES: ${classNames}
+PERIODS: ${periodStr}
+ROOMS: ${roomStr}
+TEACHING LOAD:\n${teacherStr}
+LENS PARALLELS (same-grade classes that CAN share a streaming block): ${lensParallels}`;
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { message_id } = await req.json();
-    if (!message_id) {
-      return new Response(JSON.stringify({ error: "message_id required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const body = await req.json().catch(() => ({}));
+    const prompt: string = body.prompt || "Generate tomorrow's schedule";
+    const day = body.day_of_week || detectDay(prompt);
+    const enableLens = body.enable_lens !== false; // default true
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { data: msg, error: msgErr } = await supabase
-      .from("chat_messages")
-      .select("*")
-      .eq("id", message_id)
-      .single();
+    // Parallel data fetch for speed
+    const [{ data: load }, { data: rooms }, { data: periods }, { data: staff }, { data: classes }] =
+      await Promise.all([
+        supabase.from("teaching_load").select("teacher_name,class_name,subject,hours_per_week"),
+        supabase.from("rooms").select("number,capacity,home_class,subject").limit(30),
+        supabase.from("school_periods").select("period_number,time_label").order("period_number"),
+        supabase.from("staff").select("full_name,subjects").eq("is_active", true).limit(50),
+        supabase.from("classes").select("name,student_count").order("name"),
+      ]);
 
-    if (msgErr || !msg) {
-      return new Response(JSON.stringify({ error: "message not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!load?.length) {
+      // Fallback: use static data from slots if teaching_load is empty
+      const { data: slots } = await supabase
+        .from("schedule_slots")
+        .select("class_name,teacher_raw,subject_raw,room")
+        .limit(200);
+
+      if (!slots?.length) {
+        return new Response(JSON.stringify({ error: "No teaching data found. Please seed teaching_load table." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
-    // Skip if already processed or if it's an AI message
-    if (msg.processed || msg.source === "ai") {
-      return new Response(JSON.stringify({ ok: true, skipped: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const constraints = buildConstraintString(load || [], rooms || [], periods || [], staff || [], classes || []);
 
-    // Load staff + recent AI memory in parallel
-    const [{ data: staff }, { data: memories }] = await Promise.all([
-      supabase.from("staff").select("full_name, short_name, subjects"),
-      supabase
-        .from("ai_memory")
-        .select("pattern_type, pattern_key, decision, outcome, director_note, usage_count")
-        .order("last_used_at", { ascending: false })
-        .limit(20),
-    ]);
+    const userPrompt = `REQUEST: "${prompt}"
+DAY: ${day}
+LENS SYSTEM: ${enableLens ? "ENABLED - create streaming blocks where beneficial" : "DISABLED"}
 
-    const staffList = (staff || [])
-      .map((s) => `- ${s.full_name} (${s.subjects?.join(", ") || ""})`)
-      .join("\n");
+${constraints}
 
-    const memoryList = (memories || []).length
-      ? (memories || [])
-          .map(
-            (m) =>
-              `- [${m.outcome || "unknown"}] ${m.pattern_key} → ${
-                JSON.stringify(m.decision).slice(0, 100)
-              }${m.director_note ? ` | note: ${m.director_note}` : ""} (used ${m.usage_count}×)`,
-          )
-          .join("\n")
-      : "(нет прошлых решений)";
+Generate a COMPLETE, CONFLICT-FREE schedule for ALL classes listed above.
+Each class needs 5-7 lessons. Use ONLY teacher+class+subject combinations from TEACHING LOAD.
+${enableLens ? `Create 1-2 lens blocks for English or Math where parallel classes exist.` : ""}
+Be precise and fast.`;
 
-    const userPrompt = `Канал: ${msg.chat_room || "general"}
-Источник: ${msg.source}
-Отправитель: ${msg.sender_name}
-Время: ${new Date(msg.created_at).toLocaleString("ru-RU")}
+    const t0 = Date.now();
 
-Сообщение:
-"""${msg.text}"""
+    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "",
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 8000,
+        system: SYSTEM,
+        messages: [{ role: "user", content: userPrompt }],
+        tools: buildTools(),
+        tool_choice: { type: "tool", name: "build_schedule" },
+      }),
+    });
 
-═══ Сотрудники школы ═══
-${staffList}
+    const elapsedMs = Date.now() - t0;
 
-═══ ПРОШЛЫЕ РЕШЕНИЯ ДИРЕКТОРА ═══
-${memoryList}
-
-Важно: should_reply=true ТОЛЬКО если учитель болен ИЛИ incident severity=high. Для посещаемости и рутины — should_reply=false, ai_reply="".`;
-
-    const aiRes = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
+    if (!aiRes.ok) {
+      const txt = await aiRes.text();
+      console.error("AI error", aiRes.status, txt);
+      
+      // Try Lovable gateway as fallback
+      const fallbackRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
@@ -223,206 +233,104 @@ ${memoryList}
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: SYSTEM },
             { role: "user", content: userPrompt },
           ],
-          tools: tools(),
-          tool_choice: { type: "function", function: { name: "propose_action" } },
+          tools: [{
+            type: "function",
+            function: buildTools()[0].function,
+          }],
+          tool_choice: { type: "function", function: { name: "build_schedule" } },
         }),
-      },
-    );
+      });
 
-    if (!aiRes.ok) {
-      const txt = await aiRes.text();
-      console.error("AI error", aiRes.status, txt);
-      if (aiRes.status === 429 || aiRes.status === 402) {
-        return new Response(JSON.stringify({ error: "AI quota / rate limit" }), {
-          status: aiRes.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+      if (!fallbackRes.ok) {
+        return new Response(JSON.stringify({ error: "AI unavailable", status: aiRes.status }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      return new Response(JSON.stringify({ error: "AI error" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+
+      const fbJson = await fallbackRes.json();
+      const call = fbJson.choices?.[0]?.message?.tool_calls?.[0];
+      if (!call) return new Response(JSON.stringify({ error: "no tool call from fallback" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+      
+      const args = JSON.parse(call.function.arguments);
+      return await saveAndRespond(supabase, args, day, periods, elapsedMs, corsHeaders);
     }
 
     const aiJson = await aiRes.json();
-    const call = aiJson.choices?.[0]?.message?.tool_calls?.[0];
-    if (!call) {
-      console.error("No tool call", JSON.stringify(aiJson));
-      return new Response(JSON.stringify({ error: "no tool call" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const toolUse = aiJson.content?.find((c: any) => c.type === "tool_use");
+    if (!toolUse) {
+      return new Response(JSON.stringify({ error: "No tool call in response", aiJson }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const args = JSON.parse(call.function.arguments);
+    const args = toolUse.input;
+    return await saveAndRespond(supabase, args, day, periods, elapsedMs, corsHeaders);
 
-    // Save parse trace
-    await supabase.from("message_parses").insert({
-      message_id: msg.id,
-      intent: args.intent,
-      entities: { ...(args.payload || {}), pattern_key: args.pattern_key, memory_applied: args.memory_applied },
-      confidence: args.confidence,
-      ai_reply: args.should_reply ? args.ai_reply : null,
-    });
-
-    // Post AI reply to chat ONLY if should_reply=true AND reply is not empty
-    if (args.should_reply && args.ai_reply && args.ai_reply.trim().length > 0) {
-      await supabase.from("chat_messages").insert({
-        text: args.ai_reply,
-        sender_name: "MEKTEP AI",
-        source: "ai",
-        chat_room: msg.chat_room || "general",
-        reply_to_message_id: msg.id,
-        language: args.language,
-        processed: true,
-        metadata: { memory_applied: !!args.memory_applied, intent: args.intent },
-      });
-    }
-
-    let autoExecuted = false;
-    let createdEntityId: string | null = null;
-    let createdEntityType: string | null = null;
-
-    // Auto-log attendance silently (no reply needed)
-    if (args.action_type === "log_attendance" && args.payload?.class_name) {
-      const { data: ar } = await supabase.from("attendance_reports").insert({
-        class_name: args.payload.class_name,
-        present: args.payload.present || 0,
-        absent: args.payload.absent || 0,
-        absent_reason: args.payload.absent_reason || null,
-        reported_by_name: msg.sender_name,
-        reported_by_staff_id: msg.sender_staff_id,
-        source_message_id: msg.id,
-      }).select("id").single();
-      autoExecuted = true;
-      createdEntityId = ar?.id || null;
-      createdEntityType = "attendance";
-    }
-
-    // Auto-create incidents (low and medium automatically, high needs approval)
-    if (
-      args.action_type === "create_incident" &&
-      args.payload?.incident_title
-    ) {
-      const severity = args.payload?.incident_severity || "medium";
-      const shouldAutoCreate = severity !== "high";
-
-      if (shouldAutoCreate) {
-        const { data: inc } = await supabase.from("incidents").insert({
-          title: args.payload.incident_title,
-          description: args.payload.incident_description || null,
-          location: args.payload.incident_location || null,
-          severity,
-          status: "open",
-          reporter_name: msg.sender_name,
-          reporter_staff_id: msg.sender_staff_id,
-          source_message_id: msg.id,
-        }).select("id").single();
-        autoExecuted = true;
-        createdEntityId = inc?.id || null;
-        createdEntityType = "incident";
-
-        // Notify director on dashboard
-        await supabase.from("notifications").insert({
-          type: "incident",
-          title: `🔔 Инцидент: ${args.payload.incident_title}`,
-          body: `${args.payload.incident_location ? args.payload.incident_location + " — " : ""}${msg.sender_name}`,
-          recipient_role: "director",
-          related_entity: "incident",
-          related_id: inc?.id || null,
-        });
-      }
-    }
-
-    // Memory shortcut: if AI confidently applied a past approved pattern
-    const memoryAutoApprove =
-      args.memory_applied && args.confidence >= 0.85 && args.action_type !== "none";
-
-    if (memoryAutoApprove && !autoExecuted) {
-      const { data: existing } = await supabase
-        .from("ai_memory")
-        .select("id, usage_count")
-        .eq("pattern_key", args.pattern_key)
-        .eq("outcome", "approved")
-        .maybeSingle();
-      if (existing) {
-        await supabase
-          .from("ai_memory")
-          .update({ usage_count: (existing.usage_count || 1) + 1, last_used_at: new Date().toISOString() })
-          .eq("id", existing.id);
-      }
-    }
-
-    // Queue pending action for director (skip: chitchat, none, already executed attendance)
-    if (
-      args.action_type !== "none" &&
-      args.intent !== "chitchat" &&
-      !(autoExecuted && args.action_type === "log_attendance") &&
-      !(autoExecuted && args.action_type === "create_incident")
-    ) {
-      const status = autoExecuted || memoryAutoApprove ? "executed" : "pending";
-      const { data: pa } = await supabase.from("pending_actions").insert({
-        source_message_id: msg.id,
-        action_type: args.action_type,
-        payload: {
-          ...args.payload,
-          language: args.language,
-          pattern_key: args.pattern_key,
-          memory_applied: args.memory_applied,
-          chat_room: msg.chat_room,
-        },
-        ai_summary: args.should_reply && args.ai_reply ? args.ai_reply : `${args.intent}: ${msg.text.slice(0, 100)}`,
-        ai_reasoning: `Intent: ${args.intent}, confidence: ${args.confidence}${
-          args.memory_applied ? " — applied learned pattern" : ""
-        }`,
-        status,
-      }).select("id").single();
-
-      // Notify director only for pending (needs decision)
-      if (status === "pending") {
-        const notifTitle = args.intent === "teacher_absence"
-          ? `👤 Учитель отсутствует: требуется замена`
-          : args.intent === "incident"
-          ? `🚨 Инцидент требует решения`
-          : `📋 Требуется решение директора`;
-
-        await supabase.from("notifications").insert({
-          type: args.intent === "incident" ? "incident" : "task",
-          title: notifTitle,
-          body: args.ai_reply || `От ${msg.sender_name}`,
-          recipient_role: "director",
-          related_entity: "pending_action",
-          related_id: pa?.id || null,
-        });
-      }
-    }
-
-    // Mark message as processed
-    await supabase
-      .from("chat_messages")
-      .update({ processed: true, language: args.language })
-      .eq("id", msg.id);
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        intent: args.intent,
-        autoExecuted,
-        memoryApplied: args.memory_applied,
-        repliedInChat: args.should_reply && !!args.ai_reply,
-        createdEntityType,
-        createdEntityId,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
   } catch (e) {
-    console.error("parse-chat fatal", e);
+    console.error("generate-schedule fatal", e);
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : String(e) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
+
+async function saveAndRespond(
+  supabase: any, args: any, day: string, periods: any[], elapsedMs: number, corsHeaders: any
+) {
+  const slots = args.slots || [];
+  const conflicts: string[] = [...(args.conflicts || [])];
+
+  // Server-side conflict validation
+  const byPeriod = new Map<number, { rooms: Map<string, string>; teachers: Map<string, string> }>();
+  for (const s of slots) {
+    if (!byPeriod.has(s.period)) {
+      byPeriod.set(s.period, { rooms: new Map(), teachers: new Map() });
+    }
+    const p = byPeriod.get(s.period)!;
+    if (s.room && !s.is_lens) {
+      if (p.rooms.has(s.room)) {
+        conflicts.push(`P${s.period}: Room ${s.room} conflict (${p.rooms.get(s.room)} & ${s.class_name})`);
+      } else p.rooms.set(s.room, s.class_name);
+    }
+    if (s.teacher && !s.is_lens) {
+      if (p.teachers.has(s.teacher)) {
+        conflicts.push(`P${s.period}: Teacher ${s.teacher} double-booked (${p.teachers.get(s.teacher)} & ${s.class_name})`);
+      } else p.teachers.set(s.teacher, s.class_name);
+    }
+  }
+
+  const notes = `${args.ai_notes || ""}\n⏱ Generated in ${(elapsedMs / 1000).toFixed(1)}s | ${slots.length} lessons | ${conflicts.length} conflicts`;
+
+  const { data: saved } = await supabase
+    .from("generated_schedules")
+    .insert({
+      day_of_week: args.day_of_week || day,
+      for_date: new Date().toISOString().slice(0, 10),
+      grid: { slots, periods_meta: periods, lens_blocks: args.lens_blocks || [] },
+      conflicts,
+      ai_notes: notes,
+    })
+    .select("id")
+    .single();
+
+  return new Response(
+    JSON.stringify({
+      ok: true,
+      id: saved?.id,
+      day_of_week: args.day_of_week || day,
+      elapsedMs,
+      slots,
+      lens_blocks: args.lens_blocks || [],
+      conflicts,
+      ai_notes: notes,
+      periods,
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
+}
