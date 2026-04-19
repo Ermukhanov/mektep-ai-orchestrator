@@ -43,6 +43,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refresh = async () => {
     const { data: { session } } = await supabase.auth.getSession();
+    // fallback to local forced user for demo/demo-submission if backend session missing
+    const FALLBACK_KEY = '__force_local_user';
+    if (!session?.user) {
+      try {
+        const fallback = JSON.parse(localStorage.getItem(FALLBACK_KEY) || 'null');
+        if (fallback && fallback.id) {
+          setUser(fallback as unknown as User);
+          await loadProfile(fallback.id);
+          return;
+        }
+      } catch { /* ignore */ }
+    }
     setUser(session?.user || null);
     if (session?.user) await loadProfile(session.user.id);
   };
@@ -50,14 +62,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
+    const FALLBACK_KEY = '__force_local_user';
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
-      setUser(session?.user || null);
       if (session?.user) {
-        setTimeout(() => {
-          if (mounted) loadProfile(session.user.id);
-        }, 0);
+        setUser(session.user);
+        setTimeout(() => { if (mounted) loadProfile(session.user.id); }, 0);
       } else {
+        // if backend signed out but we have a local forced session, use it
+        try {
+          const fallback = JSON.parse(localStorage.getItem(FALLBACK_KEY) || 'null');
+          if (fallback && fallback.id) {
+            setUser(fallback as unknown as User);
+            loadProfile(fallback.id);
+            return;
+          }
+        } catch { /* ignore */ }
+        setUser(null);
         setProfile(null);
         setRole(null);
       }

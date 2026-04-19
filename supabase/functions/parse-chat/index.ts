@@ -2,6 +2,7 @@
 // Uses parallel tool calls + pre-built constraint model
 // Target: < 10 seconds generation with lens (stream) support
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { callAlem } from "../_shared/llm.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -57,78 +58,121 @@ function buildTools() {
               type: "object",
               additionalProperties: false,
               properties: {
-                class_name: { type: "string" },
-                period: { type: "number" },
-                subject: { type: "string" },
-                teacher: { type: "string" },
-                room: { type: "string" },
-                is_lens: { type: "boolean" },
-                lens_group: { type: "string" },
-                lens_level: { type: "string", enum: ["beginner", "pre_intermediate", "intermediate", "upper", ""] },
-              },
-              required: ["class_name", "period", "subject", "teacher", "room"],
-            },
-          },
-          lens_blocks: {
-            type: "array",
-            description: "Cross-class streaming blocks",
-            items: {
-              type: "object",
-              properties: {
-                period: { type: "number" },
-                parallel: { type: "string" },
-                subject: { type: "string" },
-                groups: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      level: { type: "string" },
-                      teacher: { type: "string" },
-                      room: { type: "string" },
-                      classes_included: { type: "array", items: { type: "string" } },
-                    },
-                    required: ["level", "teacher", "room", "classes_included"],
-                  },
-                },
-              },
-              required: ["period", "parallel", "subject", "groups"],
-            },
-          },
-          conflicts: { type: "array", items: { type: "string" } },
-          ai_notes: { type: "string" },
-        },
-        required: ["day_of_week", "slots", "conflicts", "ai_notes"],
-      },
-    },
-  }];
-}
+                // Lightweight on-device NLP to detect cafeteria reports and facility incidents
+                try {
+                  const text = userPrompt || "";
 
-// Build a compact constraint string for the AI
-function buildConstraintString(load: any[], rooms: any[], periods: any[], staff: any[], classes: any[]): string {
-  const classNames = classes?.map(c => c.name).join(", ") || "";
-  
-  // Group load by teacher for compact representation
-  const byTeacher = new Map<string, string[]>();
-  for (const l of load || []) {
-    const key = l.teacher_name;
-    if (!byTeacher.has(key)) byTeacher.set(key, []);
-    byTeacher.get(key)!.push(`${l.class_name}:${l.subject}(${l.hours_per_week}h/w)`);
-  }
-  
-  const teacherStr = Array.from(byTeacher.entries())
-    .map(([t, items]) => `${t}→${items.join(",")}`)
-    .join("\n");
-  
-  const roomStr = (rooms || [])
-    .map(r => `${r.number}(cap:${r.capacity || "?"}${r.subject ? ",spec:" + r.subject : ""})`)
-    .join(",");
-  
-  const periodStr = (periods || [])
-    .map(p => `${p.period_number}:${p.time_label}`)
-    .join(",");
+                  // Cafeteria report parsing: matches patterns like "1А - 25 детей, 2 болеют"
+                  const classEntryRe = /([0-9]{1,2}[A-Za-zА-Яа-яЁё]?)[\s-–:—]*?(\d+)\s*(?:дет|учен|учени)/gi;
+                  const sickRe = /(\d+)\s*(?:боле|отсутств)/i;
+                  let m: RegExpExecArray | null;
+                  const perClass: Array<{ class_name: string; present: number; sick?: number }> = [];
+                  while ((m = classEntryRe.exec(text))) {
+                    const cls = m[1];
+                    const cnt = Number(m[2] || 0);
+                    // try to find sick count near this match (simple heuristic)
+                    const after = text.slice(m.index, Math.min(text.length, m.index + 80));
+                    const sick = (sickRe.exec(after) && Number(sickRe.exec(after)![1])) || undefined;
+                    perClass.push({ class_name: cls, present: cnt, sick });
+                  }
 
-  // Detect parallels for lens blocks
+                  if (perClass.length) {
+                    const total = perClass.reduce((s, p) => s + p.present, 0);
+                    const totalSick = perClass.reduce((s, p) => s + (p.sick || 0), 0);
+                    const reportText = `Столовая: Всего порций: ${total}. Отсутствуют: ${totalSick}. Подробно: ${perClass
+                      .map((p) => `${p.class_name}:${p.present}${p.sick ? ` (болеют ${p.sick})` : ""}`)
+                      .join(", ")}`;
+
+                    // Insert system message with report for director and kitchen
+                    await supabase.from("chat_messages").insert({
+                      text: reportText,
+                      sender_name: "system",
+                      source: "system",
+                      chat_room: "reports-cafeteria",
+                      metadata: { type: "cafeteria_report", details: perClass },
+                    });
+                    // (Optional) send to Twilio kitchen number if configured
+                    const TWILIO_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+                    const TWILIO_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+                    const KITCHEN_TO = Deno.env.get("KITCHEN_WHATSAPP_TO");
+                    const TWILIO_FROM = Deno.env.get("TWILIO_WHATSAPP_FROM");
+                    if (TWILIO_SID && TWILIO_TOKEN && TWILIO_FROM && KITCHEN_TO) {
+                      const form = new URLSearchParams({ From: TWILIO_FROM, To: KITCHEN_TO, Body: reportText });
+                      fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`, {
+                        method: "POST",
+                        headers: { Authorization: `Basic ${btoa(`${TWILIO_SID}:${TWILIO_TOKEN}`)}` },
+                        body: form.toString(),
+                      }).catch((e) => console.error("twilio kitchen send", e));
+                    }
+                  }
+
+                  // Incident detection: look for keywords indicating broken furniture/equipment
+                  const incidentRe = /(слом\?\w+|не работает|поломк\w+|сломалась|сломался|сломан\w+|провал|пробил|пробита)/i;
+                  if (incidentRe.test(userPrompt)) {
+                    const title = `Инцидент: ${inserted?.text?.slice(0, 120)}`;
+                    const description = inserted?.text || userPrompt;
+                    // Try to find zavhoz/maintenance staff
+                    const { data: possible } = await supabase.from("staff").select("id,full_name,position,phone,phone_number").ilike("position", "%зав%").limit(1);
+                    const assignee = possible?.[0];
+                    const insertRes = await supabase.from("tasks").insert({
+                      title,
+                      description,
+                      assignee_staff_id: assignee?.id || null,
+                      assignee_name: assignee?.full_name || "Завхоз",
+                      source: "chat",
+                      created_by: null,
+                    }).select().maybeSingle();
+                    if (insertRes.error) console.error("task create", insertRes.error);
+
+                    // Send WhatsApp notification to assignee if configured and enabled
+                    const TWILIO_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+                    const TWILIO_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+                    const TWILIO_FROM = Deno.env.get("TWILIO_WHATSAPP_FROM");
+                    const phone = assignee?.phone || assignee?.phone_number || null;
+                    // By default send notifications. Set SEND_NOTIFICATIONS="0" to disable during testing.
+                    const sendNotifications = Deno.env.get("SEND_NOTIFICATIONS") !== "0";
+                    if (sendNotifications && TWILIO_SID && TWILIO_TOKEN && TWILIO_FROM && phone) {
+                      try {
+                        const to = phone.startsWith("+") ? `whatsapp:${phone}` : `whatsapp:${phone}`;
+                        const form = new URLSearchParams({ From: TWILIO_FROM, To: to, Body: `Новая задача: ${title}\n${description}` });
+                        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`, {
+                          method: "POST",
+                          headers: { Authorization: `Basic ${btoa(`${TWILIO_SID}:${TWILIO_TOKEN}`)}` },
+                          body: form.toString(),
+                        });
+                      } catch (e) {
+                        console.error("twilio notify assignee", e);
+                      }
+                    } else {
+                      console.info("Notifications skipped for parse-chat (SEND_NOTIFICATIONS!=1)");
+                    }
+                  }
+                } catch (e) {
+                  console.error("local parse error", e);
+                }
+
+                const t0 = Date.now();
+                const aiJson = await callAlem('/v1/chat/completions', {
+                  model: "gpt-4o-mini",
+                  messages: [
+                    { role: "system", content: SYSTEM },
+                    { role: "user", content: userPrompt },
+                  ],
+                  tools: buildTools(),
+                  tool_choice: { type: "tool", name: "build_schedule" },
+                });
+
+                const elapsedMs = Date.now() - t0;
+
+                const toolUse = aiJson.content?.find((c: any) => c.type === "tool_use") || aiJson.choices?.[0]?.message?.tool_calls?.[0];
+                if (!toolUse) {
+                  return new Response(JSON.stringify({ error: "No tool call in response", aiJson }), {
+                    status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  });
+                }
+
+                const args = toolUse.input || JSON.parse(toolUse.function?.arguments || '{}');
+                return await saveAndRespond(supabase, args, day, periods, elapsedMs, corsHeaders);
   const parallelMap = new Map<string, string[]>();
   for (const c of classes || []) {
     const grade = c.name.replace(/[A-Za-zА-Яа-яЁё]/g, "");
@@ -199,76 +243,53 @@ ${enableLens ? `Create 1-2 lens blocks for English or Math where parallel classe
 Be precise and fast.`;
 
     const t0 = Date.now();
-
-    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "",
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 8000,
-        system: SYSTEM,
-        messages: [{ role: "user", content: userPrompt }],
-        tools: buildTools(),
-        tool_choice: { type: "tool", name: "build_schedule" },
-      }),
-    });
+    let aiJson: any;
+    try {
+      // Prefer ALEM as primary LLM
+      aiJson = await callAlem('/v1/chat/completions', {
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: userPrompt },
+        ],
+        tools: [{ type: "function", function: buildTools()[0].function }],
+        tool_choice: { type: "function", function: { name: "build_schedule" } },
+      });
+    } catch (alemErr) {
+      // ALEM failed or not configured — fallback to Anthropic if available
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "",
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-5",
+            max_tokens: 8000,
+            system: SYSTEM,
+            messages: [{ role: "user", content: userPrompt }],
+            tools: buildTools(),
+            tool_choice: { type: "tool", name: "build_schedule" },
+          }),
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          console.error('Anthropic fallback failed', res.status, txt, alemErr);
+          return new Response(JSON.stringify({ error: 'AI unavailable', detail: txt }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+        aiJson = await res.json();
+      } catch (anthErr) {
+        console.error('Both ALEM and Anthropic failed', alemErr, anthErr);
+        return new Response(JSON.stringify({ error: 'AI unavailable' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
 
     const elapsedMs = Date.now() - t0;
-
-    if (!aiRes.ok) {
-      const txt = await aiRes.text();
-      console.error("AI error", aiRes.status, txt);
-      
-      // Try Lovable gateway as fallback
-      const fallbackRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            { role: "system", content: SYSTEM },
-            { role: "user", content: userPrompt },
-          ],
-          tools: [{
-            type: "function",
-            function: buildTools()[0].function,
-          }],
-          tool_choice: { type: "function", function: { name: "build_schedule" } },
-        }),
-      });
-
-      if (!fallbackRes.ok) {
-        return new Response(JSON.stringify({ error: "AI unavailable", status: aiRes.status }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const fbJson = await fallbackRes.json();
-      const call = fbJson.choices?.[0]?.message?.tool_calls?.[0];
-      if (!call) return new Response(JSON.stringify({ error: "no tool call from fallback" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-      
-      const args = JSON.parse(call.function.arguments);
-      return await saveAndRespond(supabase, args, day, periods, elapsedMs, corsHeaders);
-    }
-
-    const aiJson = await aiRes.json();
-    const toolUse = aiJson.content?.find((c: any) => c.type === "tool_use");
-    if (!toolUse) {
-      return new Response(JSON.stringify({ error: "No tool call in response", aiJson }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const args = toolUse.input;
+    const toolUse = aiJson.content?.find((c: any) => c.type === "tool_use") || aiJson.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolUse) return new Response(JSON.stringify({ error: "No tool call in response", aiJson }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const args = toolUse.input || JSON.parse(toolUse.function?.arguments || '{}');
     return await saveAndRespond(supabase, args, day, periods, elapsedMs, corsHeaders);
 
   } catch (e) {

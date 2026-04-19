@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Calendar, Scale, Bell, LogOut, Inbox, MessageSquare, User } from "lucide-react";
+import { LayoutDashboard, Calendar, Scale, Bell, LogOut, Inbox, MessageSquare, User, FileText, List, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useApp } from "@/store/appStore";
@@ -57,7 +57,14 @@ export default function AppShell() {
     { to: "/app/inbox", icon: Inbox, label: t("nav.inbox"), badge: pending },
     { to: "/app/chats", icon: MessageSquare, label: t("nav.chats", "Чаты") },
     { to: "/app/schedule", icon: Calendar, label: t("nav.schedule") },
+    { to: "/app/morning-reports", icon: FileText, label: "Утренние отчёты" },
     { to: "/app/legal", icon: Scale, label: t("nav.legal") },
+    { to: "/app/orders", icon: Scale, label: "Приказы" },
+    { to: "/app/wa-logs", icon: List, label: "WA логи" },
+    // NFC internal tool removed - keep attendance only
+    { to: "/app/attendance", icon: List, label: "Посещаемость" },
+    { to: "/app/substitutions", icon: Calendar, label: "Замены" },
+    { to: "/app/director", icon: Users, label: "Директор" },
     { to: "/app/notifications", icon: Bell, label: t("nav.notifications"), badge: unread },
   ];
 

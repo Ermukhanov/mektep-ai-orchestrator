@@ -13,13 +13,37 @@ const TOKEN = Deno.env.get("GREENAPI_TOKEN")!;
 const BASE = (Deno.env.get("GREENAPI_BASE_URL") || "https://api.green-api.com").replace(/\/$/, "");
 
 async function sendWa(chatId: string, text: string) {
+  // By default send notifications. Set SEND_NOTIFICATIONS="0" to disable.
+  const skip = Deno.env.get("SEND_NOTIFICATIONS") === "0";
+
+  // Log outbound attempt to DB (if table exists). Use service role key.
+  try {
+    const supa = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    await supa.from("wa_outbound_logs").insert({ chat_id: chatId, message: text, skipped: skip, created_at: new Date().toISOString() }).catch(() => null);
+  } catch (e) {
+    // ignore logging errors
+  }
+
+  if (skip) {
+    return { ok: true, skipped: true };
+  }
+
   const url = `${BASE}/waInstance${INSTANCE}/sendMessage/${TOKEN}`;
   const r = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chatId, message: text }),
   });
-  return r.json().catch(() => ({}));
+  const json = await r.json().catch(() => ({}));
+
+  // Save response
+  try {
+    const supa = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    await supa.from("wa_outbound_logs").insert({ chat_id: chatId, message: text, response: json, skipped: false, created_at: new Date().toISOString() }).catch(() => null);
+  } catch (e) {
+    // ignore
+  }
+  return json;
 }
 
 Deno.serve(async (req) => {

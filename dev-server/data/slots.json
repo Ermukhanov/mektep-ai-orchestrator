@@ -1,0 +1,1060 @@
+{
+  "slots": [
+    {
+      "id": "slot-1",
+      "class_name": "1A",
+      "period": 1,
+      "subject": "English",
+      "teacher": "T2",
+      "room": "101"
+    },
+    {
+      "id": "slot-2",
+      "class_name": "1A",
+      "period": 2,
+      "subject": "Science",
+      "teacher": "T3",
+      "room": "102"
+    },
+    {
+      "id": "slot-3",
+      "class_name": "1A",
+      "period": 3,
+      "subject": "History",
+      "teacher": "T4",
+      "room": "103"
+    },
+    {
+      "id": "slot-4",
+      "class_name": "1A",
+      "period": 4,
+      "subject": "PE",
+      "teacher": "T5",
+      "room": "104"
+    },
+    {
+      "id": "slot-5",
+      "class_name": "1A",
+      "period": 5,
+      "subject": "Math",
+      "teacher": "T6",
+      "room": "105"
+    },
+    {
+      "id": "slot-6",
+      "class_name": "1A",
+      "period": 6,
+      "subject": "English",
+      "teacher": "T7",
+      "room": "106"
+    },
+    {
+      "id": "slot-7",
+      "class_name": "1B",
+      "period": 1,
+      "subject": "Science",
+      "teacher": "T8",
+      "room": "107"
+    },
+    {
+      "id": "slot-8",
+      "class_name": "1B",
+      "period": 2,
+      "subject": "History",
+      "teacher": "T9",
+      "room": "108"
+    },
+    {
+      "id": "slot-9",
+      "class_name": "1B",
+      "period": 3,
+      "subject": "PE",
+      "teacher": "T10",
+      "room": "109"
+    },
+    {
+      "id": "slot-10",
+      "class_name": "1B",
+      "period": 4,
+      "subject": "Math",
+      "teacher": "T11",
+      "room": "110"
+    },
+    {
+      "id": "slot-11",
+      "class_name": "1B",
+      "period": 5,
+      "subject": "English",
+      "teacher": "T12",
+      "room": "111"
+    },
+    {
+      "id": "slot-12",
+      "class_name": "1B",
+      "period": 6,
+      "subject": "Science",
+      "teacher": "T1",
+      "room": "112"
+    },
+    {
+      "id": "slot-13",
+      "class_name": "2A",
+      "period": 1,
+      "subject": "History",
+      "teacher": "T2",
+      "room": "113"
+    },
+    {
+      "id": "slot-14",
+      "class_name": "2A",
+      "period": 2,
+      "subject": "PE",
+      "teacher": "T3",
+      "room": "114"
+    },
+    {
+      "id": "slot-15",
+      "class_name": "2A",
+      "period": 3,
+      "subject": "Math",
+      "teacher": "T4",
+      "room": "115"
+    },
+    {
+      "id": "slot-16",
+      "class_name": "2A",
+      "period": 4,
+      "subject": "English",
+      "teacher": "T5",
+      "room": "116"
+    },
+    {
+      "id": "slot-17",
+      "class_name": "2A",
+      "period": 5,
+      "subject": "Science",
+      "teacher": "T6",
+      "room": "117"
+    },
+    {
+      "id": "slot-18",
+      "class_name": "2A",
+      "period": 6,
+      "subject": "History",
+      "teacher": "T7",
+      "room": "118"
+    },
+    {
+      "id": "slot-19",
+      "class_name": "2B",
+      "period": 1,
+      "subject": "PE",
+      "teacher": "T8",
+      "room": "119"
+    },
+    {
+      "id": "slot-20",
+      "class_name": "2B",
+      "period": 2,
+      "subject": "Math",
+      "teacher": "T9",
+      "room": "100"
+    },
+    {
+      "id": "slot-21",
+      "class_name": "2B",
+      "period": 3,
+      "subject": "English",
+      "teacher": "T10",
+      "room": "101"
+    },
+    {
+      "id": "slot-22",
+      "class_name": "2B",
+      "period": 4,
+      "subject": "Science",
+      "teacher": "T11",
+      "room": "102"
+    },
+    {
+      "id": "slot-23",
+      "class_name": "2B",
+      "period": 5,
+      "subject": "History",
+      "teacher": "T12",
+      "room": "103"
+    },
+    {
+      "id": "slot-24",
+      "class_name": "2B",
+      "period": 6,
+      "subject": "PE",
+      "teacher": "T1",
+      "room": "104"
+    },
+    {
+      "id": "slot-25",
+      "class_name": "3A",
+      "period": 1,
+      "subject": "Math",
+      "teacher": "T2",
+      "room": "105"
+    },
+    {
+      "id": "slot-26",
+      "class_name": "3A",
+      "period": 2,
+      "subject": "English",
+      "teacher": "T3",
+      "room": "106"
+    },
+    {
+      "id": "slot-27",
+      "class_name": "3A",
+      "period": 3,
+      "subject": "Science",
+      "teacher": "T4",
+      "room": "107"
+    },
+    {
+      "id": "slot-28",
+      "class_name": "3A",
+      "period": 4,
+      "subject": "History",
+      "teacher": "T5",
+      "room": "108"
+    },
+    {
+      "id": "slot-29",
+      "class_name": "3A",
+      "period": 5,
+      "subject": "PE",
+      "teacher": "T6",
+      "room": "109"
+    },
+    {
+      "id": "slot-30",
+      "class_name": "3A",
+      "period": 6,
+      "subject": "Math",
+      "teacher": "T7",
+      "room": "110"
+    },
+    {
+      "id": "slot-31",
+      "class_name": "3B",
+      "period": 1,
+      "subject": "English",
+      "teacher": "T8",
+      "room": "111"
+    },
+    {
+      "id": "slot-32",
+      "class_name": "3B",
+      "period": 2,
+      "subject": "Science",
+      "teacher": "T9",
+      "room": "112"
+    },
+    {
+      "id": "slot-33",
+      "class_name": "3B",
+      "period": 3,
+      "subject": "History",
+      "teacher": "T10",
+      "room": "113"
+    },
+    {
+      "id": "slot-34",
+      "class_name": "3B",
+      "period": 4,
+      "subject": "PE",
+      "teacher": "T11",
+      "room": "114"
+    },
+    {
+      "id": "slot-35",
+      "class_name": "3B",
+      "period": 5,
+      "subject": "Math",
+      "teacher": "T12",
+      "room": "115"
+    },
+    {
+      "id": "slot-36",
+      "class_name": "3B",
+      "period": 6,
+      "subject": "English",
+      "teacher": "T1",
+      "room": "116"
+    },
+    {
+      "id": "slot-37",
+      "class_name": "4A",
+      "period": 1,
+      "subject": "Science",
+      "teacher": "T2",
+      "room": "117"
+    },
+    {
+      "id": "slot-38",
+      "class_name": "4A",
+      "period": 2,
+      "subject": "History",
+      "teacher": "T3",
+      "room": "118"
+    },
+    {
+      "id": "slot-39",
+      "class_name": "4A",
+      "period": 3,
+      "subject": "PE",
+      "teacher": "T4",
+      "room": "119"
+    },
+    {
+      "id": "slot-40",
+      "class_name": "4A",
+      "period": 4,
+      "subject": "Math",
+      "teacher": "T5",
+      "room": "100"
+    },
+    {
+      "id": "slot-41",
+      "class_name": "4A",
+      "period": 5,
+      "subject": "English",
+      "teacher": "T6",
+      "room": "101"
+    },
+    {
+      "id": "slot-42",
+      "class_name": "4A",
+      "period": 6,
+      "subject": "Science",
+      "teacher": "T7",
+      "room": "102"
+    },
+    {
+      "id": "slot-43",
+      "class_name": "4B",
+      "period": 1,
+      "subject": "History",
+      "teacher": "T8",
+      "room": "103"
+    },
+    {
+      "id": "slot-44",
+      "class_name": "4B",
+      "period": 2,
+      "subject": "PE",
+      "teacher": "T9",
+      "room": "104"
+    },
+    {
+      "id": "slot-45",
+      "class_name": "4B",
+      "period": 3,
+      "subject": "Math",
+      "teacher": "T10",
+      "room": "105"
+    },
+    {
+      "id": "slot-46",
+      "class_name": "4B",
+      "period": 4,
+      "subject": "English",
+      "teacher": "T11",
+      "room": "106"
+    },
+    {
+      "id": "slot-47",
+      "class_name": "4B",
+      "period": 5,
+      "subject": "Science",
+      "teacher": "T12",
+      "room": "107"
+    },
+    {
+      "id": "slot-48",
+      "class_name": "4B",
+      "period": 6,
+      "subject": "History",
+      "teacher": "T1",
+      "room": "108"
+    },
+    {
+      "id": "slot-49",
+      "class_name": "5A",
+      "period": 1,
+      "subject": "PE",
+      "teacher": "T2",
+      "room": "109"
+    },
+    {
+      "id": "slot-50",
+      "class_name": "5A",
+      "period": 2,
+      "subject": "Math",
+      "teacher": "T3",
+      "room": "110"
+    },
+    {
+      "id": "slot-51",
+      "class_name": "5A",
+      "period": 3,
+      "subject": "English",
+      "teacher": "T4",
+      "room": "111"
+    },
+    {
+      "id": "slot-52",
+      "class_name": "5A",
+      "period": 4,
+      "subject": "Science",
+      "teacher": "T5",
+      "room": "112"
+    },
+    {
+      "id": "slot-53",
+      "class_name": "5A",
+      "period": 5,
+      "subject": "History",
+      "teacher": "T6",
+      "room": "113"
+    },
+    {
+      "id": "slot-54",
+      "class_name": "5A",
+      "period": 6,
+      "subject": "PE",
+      "teacher": "T7",
+      "room": "114"
+    },
+    {
+      "id": "slot-55",
+      "class_name": "5B",
+      "period": 1,
+      "subject": "Math",
+      "teacher": "T8",
+      "room": "115"
+    },
+    {
+      "id": "slot-56",
+      "class_name": "5B",
+      "period": 2,
+      "subject": "English",
+      "teacher": "T9",
+      "room": "116"
+    },
+    {
+      "id": "slot-57",
+      "class_name": "5B",
+      "period": 3,
+      "subject": "Science",
+      "teacher": "T10",
+      "room": "117"
+    },
+    {
+      "id": "slot-58",
+      "class_name": "5B",
+      "period": 4,
+      "subject": "History",
+      "teacher": "T11",
+      "room": "118"
+    },
+    {
+      "id": "slot-59",
+      "class_name": "5B",
+      "period": 5,
+      "subject": "PE",
+      "teacher": "T12",
+      "room": "119"
+    },
+    {
+      "id": "slot-60",
+      "class_name": "5B",
+      "period": 6,
+      "subject": "Math",
+      "teacher": "T1",
+      "room": "100"
+    },
+    {
+      "id": "slot-61",
+      "class_name": "6A",
+      "period": 1,
+      "subject": "English",
+      "teacher": "T2",
+      "room": "101"
+    },
+    {
+      "id": "slot-62",
+      "class_name": "6A",
+      "period": 2,
+      "subject": "Science",
+      "teacher": "T3",
+      "room": "102"
+    },
+    {
+      "id": "slot-63",
+      "class_name": "6A",
+      "period": 3,
+      "subject": "History",
+      "teacher": "T4",
+      "room": "103"
+    },
+    {
+      "id": "slot-64",
+      "class_name": "6A",
+      "period": 4,
+      "subject": "PE",
+      "teacher": "T5",
+      "room": "104"
+    },
+    {
+      "id": "slot-65",
+      "class_name": "6A",
+      "period": 5,
+      "subject": "Math",
+      "teacher": "T6",
+      "room": "105"
+    },
+    {
+      "id": "slot-66",
+      "class_name": "6A",
+      "period": 6,
+      "subject": "English",
+      "teacher": "T7",
+      "room": "106"
+    },
+    {
+      "id": "slot-67",
+      "class_name": "6B",
+      "period": 1,
+      "subject": "Science",
+      "teacher": "T8",
+      "room": "107"
+    },
+    {
+      "id": "slot-68",
+      "class_name": "6B",
+      "period": 2,
+      "subject": "History",
+      "teacher": "T9",
+      "room": "108"
+    },
+    {
+      "id": "slot-69",
+      "class_name": "6B",
+      "period": 3,
+      "subject": "PE",
+      "teacher": "T10",
+      "room": "109"
+    },
+    {
+      "id": "slot-70",
+      "class_name": "6B",
+      "period": 4,
+      "subject": "Math",
+      "teacher": "T11",
+      "room": "110"
+    },
+    {
+      "id": "slot-71",
+      "class_name": "6B",
+      "period": 5,
+      "subject": "English",
+      "teacher": "T12",
+      "room": "111"
+    },
+    {
+      "id": "slot-72",
+      "class_name": "6B",
+      "period": 6,
+      "subject": "Science",
+      "teacher": "T1",
+      "room": "112"
+    },
+    {
+      "id": "slot-73",
+      "class_name": "7A",
+      "period": 1,
+      "subject": "History",
+      "teacher": "T2",
+      "room": "113"
+    },
+    {
+      "id": "slot-74",
+      "class_name": "7A",
+      "period": 2,
+      "subject": "PE",
+      "teacher": "T3",
+      "room": "114"
+    },
+    {
+      "id": "slot-75",
+      "class_name": "7A",
+      "period": 3,
+      "subject": "Math",
+      "teacher": "T4",
+      "room": "115"
+    },
+    {
+      "id": "slot-76",
+      "class_name": "7A",
+      "period": 4,
+      "subject": "English",
+      "teacher": "T5",
+      "room": "116"
+    },
+    {
+      "id": "slot-77",
+      "class_name": "7A",
+      "period": 5,
+      "subject": "Science",
+      "teacher": "T6",
+      "room": "117"
+    },
+    {
+      "id": "slot-78",
+      "class_name": "7A",
+      "period": 6,
+      "subject": "History",
+      "teacher": "T7",
+      "room": "118"
+    },
+    {
+      "id": "slot-79",
+      "class_name": "7B",
+      "period": 1,
+      "subject": "PE",
+      "teacher": "T8",
+      "room": "119"
+    },
+    {
+      "id": "slot-80",
+      "class_name": "7B",
+      "period": 2,
+      "subject": "Math",
+      "teacher": "T9",
+      "room": "100"
+    },
+    {
+      "id": "slot-81",
+      "class_name": "7B",
+      "period": 3,
+      "subject": "English",
+      "teacher": "T10",
+      "room": "101"
+    },
+    {
+      "id": "slot-82",
+      "class_name": "7B",
+      "period": 4,
+      "subject": "Science",
+      "teacher": "T11",
+      "room": "102"
+    },
+    {
+      "id": "slot-83",
+      "class_name": "7B",
+      "period": 5,
+      "subject": "History",
+      "teacher": "T12",
+      "room": "103"
+    },
+    {
+      "id": "slot-84",
+      "class_name": "7B",
+      "period": 6,
+      "subject": "PE",
+      "teacher": "T1",
+      "room": "104"
+    },
+    {
+      "id": "slot-85",
+      "class_name": "8A",
+      "period": 1,
+      "subject": "Math",
+      "teacher": "T2",
+      "room": "105"
+    },
+    {
+      "id": "slot-86",
+      "class_name": "8A",
+      "period": 2,
+      "subject": "English",
+      "teacher": "T3",
+      "room": "106"
+    },
+    {
+      "id": "slot-87",
+      "class_name": "8A",
+      "period": 3,
+      "subject": "Science",
+      "teacher": "T4",
+      "room": "107"
+    },
+    {
+      "id": "slot-88",
+      "class_name": "8A",
+      "period": 4,
+      "subject": "History",
+      "teacher": "T5",
+      "room": "108"
+    },
+    {
+      "id": "slot-89",
+      "class_name": "8A",
+      "period": 5,
+      "subject": "PE",
+      "teacher": "T6",
+      "room": "109"
+    },
+    {
+      "id": "slot-90",
+      "class_name": "8A",
+      "period": 6,
+      "subject": "Math",
+      "teacher": "T7",
+      "room": "110"
+    },
+    {
+      "id": "slot-91",
+      "class_name": "8B",
+      "period": 1,
+      "subject": "English",
+      "teacher": "T8",
+      "room": "111"
+    },
+    {
+      "id": "slot-92",
+      "class_name": "8B",
+      "period": 2,
+      "subject": "Science",
+      "teacher": "T9",
+      "room": "112"
+    },
+    {
+      "id": "slot-93",
+      "class_name": "8B",
+      "period": 3,
+      "subject": "History",
+      "teacher": "T10",
+      "room": "113"
+    },
+    {
+      "id": "slot-94",
+      "class_name": "8B",
+      "period": 4,
+      "subject": "PE",
+      "teacher": "T11",
+      "room": "114"
+    },
+    {
+      "id": "slot-95",
+      "class_name": "8B",
+      "period": 5,
+      "subject": "Math",
+      "teacher": "T12",
+      "room": "115"
+    },
+    {
+      "id": "slot-96",
+      "class_name": "8B",
+      "period": 6,
+      "subject": "English",
+      "teacher": "T1",
+      "room": "116"
+    },
+    {
+      "id": "slot-97",
+      "class_name": "9A",
+      "period": 1,
+      "subject": "Science",
+      "teacher": "T2",
+      "room": "117"
+    },
+    {
+      "id": "slot-98",
+      "class_name": "9A",
+      "period": 2,
+      "subject": "History",
+      "teacher": "T3",
+      "room": "118"
+    },
+    {
+      "id": "slot-99",
+      "class_name": "9A",
+      "period": 3,
+      "subject": "PE",
+      "teacher": "T4",
+      "room": "119"
+    },
+    {
+      "id": "slot-100",
+      "class_name": "9A",
+      "period": 4,
+      "subject": "Math",
+      "teacher": "T5",
+      "room": "100"
+    },
+    {
+      "id": "slot-101",
+      "class_name": "9A",
+      "period": 5,
+      "subject": "English",
+      "teacher": "T6",
+      "room": "101"
+    },
+    {
+      "id": "slot-102",
+      "class_name": "9A",
+      "period": 6,
+      "subject": "Science",
+      "teacher": "T7",
+      "room": "102"
+    },
+    {
+      "id": "slot-103",
+      "class_name": "9B",
+      "period": 1,
+      "subject": "History",
+      "teacher": "T8",
+      "room": "103"
+    },
+    {
+      "id": "slot-104",
+      "class_name": "9B",
+      "period": 2,
+      "subject": "PE",
+      "teacher": "T9",
+      "room": "104"
+    },
+    {
+      "id": "slot-105",
+      "class_name": "9B",
+      "period": 3,
+      "subject": "Math",
+      "teacher": "T10",
+      "room": "105"
+    },
+    {
+      "id": "slot-106",
+      "class_name": "9B",
+      "period": 4,
+      "subject": "English",
+      "teacher": "T11",
+      "room": "106"
+    },
+    {
+      "id": "slot-107",
+      "class_name": "9B",
+      "period": 5,
+      "subject": "Science",
+      "teacher": "T12",
+      "room": "107"
+    },
+    {
+      "id": "slot-108",
+      "class_name": "9B",
+      "period": 6,
+      "subject": "History",
+      "teacher": "T1",
+      "room": "108"
+    },
+    {
+      "id": "slot-109",
+      "class_name": "10A",
+      "period": 1,
+      "subject": "PE",
+      "teacher": "T2",
+      "room": "109"
+    },
+    {
+      "id": "slot-110",
+      "class_name": "10A",
+      "period": 2,
+      "subject": "Math",
+      "teacher": "T3",
+      "room": "110"
+    },
+    {
+      "id": "slot-111",
+      "class_name": "10A",
+      "period": 3,
+      "subject": "English",
+      "teacher": "T4",
+      "room": "111"
+    },
+    {
+      "id": "slot-112",
+      "class_name": "10A",
+      "period": 4,
+      "subject": "Science",
+      "teacher": "T5",
+      "room": "112"
+    },
+    {
+      "id": "slot-113",
+      "class_name": "10A",
+      "period": 5,
+      "subject": "History",
+      "teacher": "T6",
+      "room": "113"
+    },
+    {
+      "id": "slot-114",
+      "class_name": "10A",
+      "period": 6,
+      "subject": "PE",
+      "teacher": "T7",
+      "room": "114"
+    },
+    {
+      "id": "slot-115",
+      "class_name": "10B",
+      "period": 1,
+      "subject": "Math",
+      "teacher": "T8",
+      "room": "115"
+    },
+    {
+      "id": "slot-116",
+      "class_name": "10B",
+      "period": 2,
+      "subject": "English",
+      "teacher": "T9",
+      "room": "116"
+    },
+    {
+      "id": "slot-117",
+      "class_name": "10B",
+      "period": 3,
+      "subject": "Science",
+      "teacher": "T10",
+      "room": "117"
+    },
+    {
+      "id": "slot-118",
+      "class_name": "10B",
+      "period": 4,
+      "subject": "History",
+      "teacher": "T11",
+      "room": "118"
+    },
+    {
+      "id": "slot-119",
+      "class_name": "10B",
+      "period": 5,
+      "subject": "PE",
+      "teacher": "T12",
+      "room": "119"
+    },
+    {
+      "id": "slot-120",
+      "class_name": "10B",
+      "period": 6,
+      "subject": "Math",
+      "teacher": "T1",
+      "room": "100"
+    },
+    {
+      "id": "slot-121",
+      "class_name": "11A",
+      "period": 1,
+      "subject": "English",
+      "teacher": "T2",
+      "room": "101"
+    },
+    {
+      "id": "slot-122",
+      "class_name": "11A",
+      "period": 2,
+      "subject": "Science",
+      "teacher": "T3",
+      "room": "102"
+    },
+    {
+      "id": "slot-123",
+      "class_name": "11A",
+      "period": 3,
+      "subject": "History",
+      "teacher": "T4",
+      "room": "103"
+    },
+    {
+      "id": "slot-124",
+      "class_name": "11A",
+      "period": 4,
+      "subject": "PE",
+      "teacher": "T5",
+      "room": "104"
+    },
+    {
+      "id": "slot-125",
+      "class_name": "11A",
+      "period": 5,
+      "subject": "Math",
+      "teacher": "T6",
+      "room": "105"
+    },
+    {
+      "id": "slot-126",
+      "class_name": "11A",
+      "period": 6,
+      "subject": "English",
+      "teacher": "T7",
+      "room": "106"
+    },
+    {
+      "id": "slot-127",
+      "class_name": "11B",
+      "period": 1,
+      "subject": "Science",
+      "teacher": "T8",
+      "room": "107"
+    },
+    {
+      "id": "slot-128",
+      "class_name": "11B",
+      "period": 2,
+      "subject": "History",
+      "teacher": "T9",
+      "room": "108"
+    },
+    {
+      "id": "slot-129",
+      "class_name": "11B",
+      "period": 3,
+      "subject": "PE",
+      "teacher": "T10",
+      "room": "109"
+    },
+    {
+      "id": "slot-130",
+      "class_name": "11B",
+      "period": 4,
+      "subject": "Math",
+      "teacher": "T11",
+      "room": "110"
+    },
+    {
+      "id": "slot-131",
+      "class_name": "11B",
+      "period": 5,
+      "subject": "English",
+      "teacher": "T12",
+      "room": "111"
+    },
+    {
+      "id": "slot-132",
+      "class_name": "11B",
+      "period": 6,
+      "subject": "Science",
+      "teacher": "T1",
+      "room": "112"
+    }
+  ]
+}

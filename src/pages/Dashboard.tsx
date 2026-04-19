@@ -66,6 +66,20 @@ export default function Dashboard() {
     setAttendance(att || []);
     setFeed(chat || []);
     setCounts({ incidents: incCount || 0, subs: subCount || 0, pending: pendCount || 0 });
+
+    // If no real data and running in mock/test mode, provide minimal test data so dashboard isn't empty
+    try {
+      const useMock = (import.meta as any).env.VITE_USE_MOCK === 'true' || String((import.meta as any).env.VITE_SUPABASE_URL || '').includes('localhost');
+      if (useMock && (!att || att.length === 0)) {
+        setAttendance([{ class_name: '1A', present: 20, absent: 2, reported_by_name: 'Система', created_at: new Date().toISOString() }]);
+      }
+      if (useMock && (!chat || chat.length === 0)) {
+        setFeed([{ id: 't1', text: 'Тестовое сообщение: отчёты загружены', sender_name: 'Система', created_at: new Date().toISOString(), source: 'system' }]);
+      }
+      if (useMock && (!incCount && !subCount && !pendCount)) {
+        setCounts({ incidents: 0, subs: 0, pending: 0 });
+      }
+    } catch (e) { /* ignore */ }
   };
 
   useEffect(() => {

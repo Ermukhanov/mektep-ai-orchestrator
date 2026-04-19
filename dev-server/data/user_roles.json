@@ -1,0 +1,6 @@
+{
+  "user_roles": [
+    { "user_id": "local-cokapco395@gmail.com", "role": "director" },
+    { "user_id": "local-test@example.com", "role": "teacher" }
+  ]
+}

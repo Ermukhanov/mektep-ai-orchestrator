@@ -44,6 +44,41 @@ export const SCHEDULE: ScheduleSlot[] = days.flatMap((day, di) =>
   })
 );
 
+// Three different mock schedule generators to make mock output varied and realistic
+export function generateMockScheduleVariant(variant = 1) {
+  const slots: any[] = [];
+  if (variant === 1) {
+    // balanced per teacher
+    for (let i = 0; i < CLASSES.length; i++) {
+      const cls = CLASSES[i];
+      for (let p = 1; p <= 5; p++) {
+        const teacher = STAFF[(i + p) % STAFF.length];
+        slots.push({ class_name: cls, period: p, subject: teacher.subject, teacher: teacher.name, room: String(100 + ((i + p) % 12)) });
+      }
+    }
+  } else if (variant === 2) {
+    // clustered by subject
+    for (let p = 1; p <= 5; p++) {
+      for (let i = 0; i < CLASSES.length; i++) {
+        const cls = CLASSES[i];
+        const teacher = STAFF[(p + Math.floor(i / 2)) % STAFF.length];
+        slots.push({ class_name: cls, period: p, subject: teacher.subject, teacher: teacher.name, room: String(200 + ((i + p) % 10)) });
+      }
+    }
+  } else {
+    // alternating lens-style for English in parallel classes
+    for (let i = 0; i < CLASSES.length; i++) {
+      const cls = CLASSES[i];
+      for (let p = 1; p <= 5; p++) {
+        const teacher = STAFF[(i + p) % STAFF.length];
+        const isLens = p === 3 && (i % 2 === 0);
+        slots.push({ class_name: cls, period: p, subject: teacher.subject, teacher: teacher.name, room: String(300 + ((i + p) % 8)), is_lens: isLens, lens_group: isLens ? 'A' : undefined });
+      }
+    }
+  }
+  return { day_of_week: 'tue', slots, conflicts: [], ai_notes: 'Сгенерировано локальным алгоритмом' };
+}
+
 export interface FeedMessage {
   id: string;
   from: string;
@@ -116,6 +151,9 @@ export const LEGAL_ORDERS: LegalOrder[] = [
     ],
   },
 ];
+
+// Ensure at least three orders are always available
+export const DEFAULT_LEGAL_ORDERS = LEGAL_ORDERS.slice(0, 3);
 
 export interface Notification {
   id: string;

@@ -8,6 +8,7 @@ export function useVoiceInput(opts?: { lang?: string; onFinal?: (text: string) =
   const [transcript, setTranscript] = useState("");
   const [interim, setInterim] = useState("");
   const recogRef = useRef<any>(null);
+  const shouldStopRef = useRef(false);
   const onFinalRef = useRef(opts?.onFinal);
   onFinalRef.current = opts?.onFinal;
 
@@ -20,7 +21,8 @@ export function useVoiceInput(opts?: { lang?: string; onFinal?: (text: string) =
     }
     const r = new SR();
     r.lang = opts?.lang || "ru-RU";
-    r.continuous = false;
+    // keep continuous to reduce quick onend/stop cycles
+    r.continuous = true;
     r.interimResults = true;
     r.onresult = (e: any) => {
       let final = "";
@@ -31,19 +33,32 @@ export function useVoiceInput(opts?: { lang?: string; onFinal?: (text: string) =
         else inter += txt;
       }
       if (final) {
-        setTranscript((prev) => (prev ? prev + " " : "") + final.trim());
-        onFinalRef.current?.(final.trim());
+        const trimmed = final.trim();
+        console.debug('useVoiceInput onresult final:', trimmed);
+        setTranscript((prev) => (prev ? prev + " " : "") + trimmed);
+        try { onFinalRef.current?.(trimmed); } catch (err) { console.error('onFinal handler error', err); }
       }
       setInterim(inter);
     };
-    r.onerror = () => setState("error");
+    r.onerror = (ev: any) => { console.error('SpeechRecognition error', ev); setState("error"); };
     r.onend = () => {
-      setState("idle");
+      // If stop was explicitly requested, go to idle; otherwise try to restart
       setInterim("");
+      if (shouldStopRef.current) {
+        setState("idle");
+      } else {
+        // try to restart once after short delay to handle brief silences
+        try {
+          setTimeout(() => { try { r.start(); } catch (e) { console.error('restart SR failed', e); setState("idle"); } }, 250);
+        } catch (ex) {
+          console.error('onend restart error', ex);
+          setState("idle");
+        }
+      }
     };
     recogRef.current = r;
     return () => {
-      try { r.stop(); } catch { /* noop */ }
+      try { shouldStopRef.current = true; r.stop(); } catch { /* noop */ }
     };
   }, [opts?.lang]);
 
@@ -52,11 +67,11 @@ export function useVoiceInput(opts?: { lang?: string; onFinal?: (text: string) =
     setTranscript("");
     setInterim("");
     setState("listening");
-    try { recogRef.current.start(); } catch { /* already started */ }
+    try { shouldStopRef.current = false; recogRef.current.start(); } catch { /* already started or failed */ }
   }, []);
 
   const stop = useCallback(() => {
-    try { recogRef.current?.stop(); } catch { /* noop */ }
+    try { shouldStopRef.current = true; recogRef.current?.stop(); } catch { /* noop */ }
   }, []);
 
   return { state, transcript, interim, start, stop, supported: state !== "unsupported" };

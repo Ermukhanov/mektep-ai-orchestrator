@@ -11,6 +11,7 @@ import {
   Printer, Eye
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { LEGAL_ORDERS } from "@/lib/mockData";
 import { toast } from "sonner";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import * as XLSX from "xlsx";
@@ -37,7 +38,7 @@ const ORDER_TYPE_LABELS: Record<string, { label: string; color: string; icon: st
   "discipline": { label: "Дисциплинарный приказ", color: "bg-red-100 text-red-700 border-red-300", icon: "⚠️" },
 };
 
-const QUICK_DOC_PROMPTS = [
+  const QUICK_DOC_PROMPTS = [
   { label: "Приказ 130", prompt: "Сгенерируй приказ 130 о присвоении первой квалификационной категории учителю математики Аскарову Данияру" },
   { label: "Замена учителя", prompt: "Создай приказ о замене заболевшего учителя физики Сунгариевой на учителя Сулейманова на сегодня" },
   { label: "Учебный план", prompt: "Сгенерируй приказ 76 об утверждении учебного плана на 2024-2025 учебный год" },
@@ -58,16 +59,67 @@ export default function Legal() {
   const [correcting, setCorrecting] = useState(false);
   const [editingContent, setEditingContent] = useState(false);
   const [editedContent, setEditedContent] = useState("");
+  const [ragOrders, setRagOrders] = useState<any[]>([]);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | string | null>(null);
+  const [fields, setFields] = useState<Record<string, string>>({ date: new Date().toISOString().slice(0,10), responsible: '', to: '', text: '', signed_by: '' });
   const endRef = useRef<HTMLDivElement>(null);
 
   const lang = i18n.language === "kz" ? "kk-KZ" : i18n.language === "en" ? "en-US" : "ru-RU";
+  const [voiceDocTrigger, setVoiceDocTrigger] = useState(false);
   const voiceDoc = useVoiceInput({
     lang,
-    onFinal: (text) => setDocPrompt((prev) => (prev ? prev + " " : "") + text),
+    onFinal: (text) => {
+      setDocPrompt((prev) => (prev ? prev + " " : "") + text);
+      const t = text.toLowerCase();
+      const match = t.match(/приказ\s*(130|76|110)|сгенерируй\s*приказ|подготовь\s*приказ|создай\s*приказ/i);
+      if (match) {
+        // build a default prompt if number present
+        const num = match[1];
+        const p = num ? `Сгенерируй приказ ${num} по форме для школы: ${text}` : text;
+        setVoiceDocTrigger(true);
+        // small delay to allow state update
+        setTimeout(() => generateDoc(p), 300);
+        try {
+          const ack = typeof window !== 'undefined' && (window as any).speechSynthesis ? new SpeechSynthesisUtterance('Принято, готовлю документ') : null;
+          if (ack) { ack.lang = lang; (window as any).speechSynthesis.cancel(); (window as any).speechSynthesis.speak(ack); }
+        } catch (e) { /* noop */ }
+      }
+    },
   });
 
   useEffect(() => {
-    supabase.from("legal_orders").select("*").order("number").then(({ data }) => setOrders(data || []));
+    const base = (import.meta as any).env.VITE_SUPABASE_URL || '';
+    // Always show at least three usable orders in UI
+    (async () => {
+      try {
+        const base = (import.meta as any).env.VITE_SUPABASE_URL || '';
+        if (base.includes('localhost:8787')) {
+          const res = await fetch(`${base}/functions/rag-list`).catch(() => null);
+          if (res && res.ok) {
+            const j = await res.json();
+            setOrders((j.orders || []).map((o: any) => ({ id: String(o.id), number: String(o.id), title: o.title, summary: o.body || null, bullets: [] })));
+            return;
+          }
+        }
+        const { data } = await supabase.from("legal_orders").select("*").order("number");
+        if (data && data.length) setOrders(data as any);
+        else setOrders(LEGAL_ORDERS as any);
+      } catch (e) {
+        console.error('Failed to load orders, using mock', e);
+        setOrders(LEGAL_ORDERS as any);
+      }
+    })();
+    // load RAG mock when in dev mock mode
+    (async () => {
+      const base = (import.meta as any).env.VITE_SUPABASE_URL || '';
+      try {
+        if (base.includes('localhost:8787')) {
+          const res = await fetch(`${base}/functions/rag-list`);
+          const j = await res.json();
+          if (res.ok) setRagOrders(j.orders || []);
+        }
+      } catch (e) { /* ignore */ }
+    })();
   }, []);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
@@ -86,10 +138,42 @@ export default function Legal() {
       if (error) throw error;
       setMessages((m) => [...m, { role: "assistant", content: (data as any)?.reply || "" }]);
     } catch (e: any) {
-      toast.error(e.message);
+      console.error('legal ask error', e);
+      // fallback reply
+      setMessages((m) => [...m, { role: "assistant", content: "Извините, AI временно недоступен — используйте шаблон вручную." }]);
+      toast.error(e.message || 'Ошибка запроса к AI');
     } finally {
       setLoading(false);
     }
+  };
+
+  const ingestTemplates = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("ingest-legal-templates");
+      if (error) throw error;
+      toast.success("Приказы загружены");
+      supabase.from("legal_orders").select("*").order("number").then(({ data }) => setOrders(data || []));
+    } catch (e: any) { toast.error(e.message || "Ошибка"); }
+  };
+
+  const ragIngest = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("rag-ingest-legal");
+      if (error) throw error;
+      toast.success("RAG ingest started");
+    } catch (e: any) { toast.error(e.message || "Ошибка"); }
+  };
+
+  const sendTwilioTest = async () => {
+    try {
+      const to = prompt('Телефон получателя (+7...)') || '';
+      const msg = prompt('Текст сообщения') || 'Тестовое уведомление от MEKTEP AI';
+      if (!to) return;
+      const url = `${(import.meta as any).env.VITE_SUPABASE_URL}/functions/v1/greenapi-webhook?action=send`;
+      const res = await fetch(url, { method: 'POST', headers: { apikey: (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '', 'Content-Type': 'application/json' }, body: JSON.stringify({ chatId: to, message: msg }) });
+      const j = await res.json();
+      if (res.ok) toast.success('Отправлено через Green API'); else toast.error(JSON.stringify(j));
+    } catch (e: any) { toast.error(e.message || 'Ошибка'); }
   };
 
   // Generate document
@@ -111,7 +195,27 @@ export default function Legal() {
         toast.success("✅ Документ сгенерирован!");
       }
     } catch (e: any) {
-      toast.error(e.message || "Ошибка генерации");
+      console.error('generateDoc error', e);
+      // Fallback: if AI/function failed, build a simple mock document (130 if requested)
+      try {
+        const is130 = /130/.test(p);
+        const mock = {
+          order_type: is130 ? '130' : 'absence',
+          title: is130 ? 'Приказ 130 — Категория педагога (демо)' : 'Демо-приказ',
+          order_number: is130 ? '130-DEM' : `DEM-${Date.now()}`,
+          date: new Date().toLocaleDateString('ru-RU'),
+          content: is130 ? `ПРИКАЗ №130 (демо)\n\nНа основании...\nНазначить...` : `ДЕМО ПРИКАЗ\n\n${p}`,
+          filled_fields: {},
+          summary: is130 ? 'Демо-приказ по форме 130' : 'Демо документ',
+        };
+        setGeneratedDoc(mock as any);
+        setEditedContent(mock.content);
+        setDocMode('preview');
+        toast.success('Использован демонстрационный документ (фолбэк)');
+      } catch (e2) {
+        console.error('mock doc error', e2);
+        toast.error(e.message || 'Ошибка генерации');
+      }
     } finally {
       setGenerating(false);
     }
@@ -256,6 +360,11 @@ export default function Legal() {
               <div className="p-4 border-b border-border flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-accent" />
                 <h2 className="font-display font-bold">Объяснение приказов</h2>
+                <div className="ml-auto flex gap-2">
+                  <Button size="sm" onClick={ingestTemplates}>Ingest templates</Button>
+                  <Button size="sm" variant="outline" onClick={ragIngest}>RAG ingest</Button>
+                  <Button size="sm" variant="ghost" onClick={sendTwilioTest}>Twilio test</Button>
+                </div>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin">
                 {messages.length === 0 && (
@@ -347,6 +456,51 @@ export default function Legal() {
 
                 {/* Quick prompts */}
                 <div className="space-y-2">
+                {/* RAG quick generate */}
+                <div className="p-3 bg-secondary rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-semibold">Быстрая генерация по приказу (RAG)</div>
+                    <div className="text-xs text-muted-foreground">Локальный RAG</div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-2 mb-2">
+                    <select value={selectedOrderId ?? ''} onChange={(e) => setSelectedOrderId(e.target.value || null)} className="input">
+                      <option value="">Выберите приказ...</option>
+                      {ragOrders.map((o: any) => (<option key={o.id} value={o.id}>{o.id} — {o.title}</option>))}
+                    </select>
+                    <input className="input" value={fields.date} onChange={(e) => setFields(f => ({...f, date: e.target.value}))} type="date" />
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-2 mb-2">
+                    <input className="input" placeholder="Ответственный" value={fields.responsible} onChange={(e) => setFields(f => ({...f, responsible: e.target.value}))} />
+                    <input className="input" placeholder="Кому (to)" value={fields.to} onChange={(e) => setFields(f => ({...f, to: e.target.value}))} />
+                  </div>
+                  <Textarea className="mb-2" placeholder="Текст приказа / доп. поля" value={fields.text} onChange={(e) => setFields(f => ({...f, text: e.target.value}))} rows={3} />
+                  <div className="flex gap-2">
+                    <Button onClick={async () => {
+                      if (!selectedOrderId) { toast.error('Выберите приказ'); return; }
+                      try {
+                        const base = (import.meta as any).env.VITE_SUPABASE_URL || '';
+                        if (base.includes('localhost:8787')) {
+                          const res = await fetch(`${base}/functions/generate-order`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: selectedOrderId, fields }) });
+                          const j = await res.json();
+                          if (!res.ok) { toast.error(JSON.stringify(j)); return; }
+                          // show preview and allow download
+                          const doc = j.doc || j.order?.body || '';
+                          const filename = j.filename || `order_${selectedOrderId}.txt`;
+                          setGeneratedDoc({ order_type: String(selectedOrderId), title: ragOrders.find(r => String(r.id) === String(selectedOrderId))?.title || '', order_number: String(selectedOrderId), date: fields.date, content: doc, filled_fields: fields, summary: '' });
+                          setDocMode('preview');
+                          // auto-download
+                          const blob = new Blob([doc], { type: 'text/plain;charset=utf-8' });
+                          const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+                          toast.success('Приказ сгенерирован и скачан');
+                        } else {
+                                              // fallback to server function
+                                              await generateDoc();
+                        }
+                      } catch (e: any) { toast.error(e.message || 'Ошибка генерации'); }
+                    }} className="gradient-primary text-white">Сгенерировать приказ</Button>
+                    <Button variant="outline" onClick={() => { setFields({ date: new Date().toISOString().slice(0,10), responsible: '', to: '', text: '', signed_by: '' }); setSelectedOrderId(null); }}>Сброс</Button>
+                  </div>
+                </div>
                   <p className="text-xs text-muted-foreground font-medium">Быстрые шаблоны:</p>
                   <div className="grid grid-cols-2 gap-2">
                     {QUICK_DOC_PROMPTS.map((qp, i) => (

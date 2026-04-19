@@ -1,0 +1,20 @@
+{
+  "nfc_events": [
+    {
+      "id": "n-1",
+      "uid": "UID-ERASYL-001",
+      "student_id": "ЕрасылАмиртай 9Ф",
+      "device": "test-nfc",
+      "created_at": "2026-04-19T06:00:00.000Z",
+      "card_code": "1234-5678"
+    },
+    {
+      "id": "n-2",
+      "uid": "UID-NURIA-001",
+      "student_id": "Нурия Орынбасаровна (кл. рук.)",
+      "device": "test-nfc",
+      "created_at": "2026-04-19T06:02:00.000Z",
+      "card_code": "9999-0000"
+    }
+  ]
+}

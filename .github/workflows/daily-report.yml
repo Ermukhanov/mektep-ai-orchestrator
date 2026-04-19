@@ -1,0 +1,36 @@
+name: Daily Report
+
+on:
+  schedule:
+    # Runs at 03:00 UTC => 09:00 ALMT (Asia/Almaty). Adjust cron if needed for other timezone.
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  run-daily-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call daily-report function
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -e
+          TODAY=$(date -u +"%Y-%m-%d")
+          echo "Calling daily-report for ${TODAY}..."
+          RESPONSE_FILE="daily-report-${TODAY}.csv"
+          HTTP_STATUS=$(curl -s -w "%{http_code}" -o "$RESPONSE_FILE" -X POST "${SUPABASE_URL}/functions/v1/daily-report" \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" || true)
+          echo "HTTP status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "daily-report failed, printing response:"
+            cat "$RESPONSE_FILE" || true
+            exit 1
+          fi
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-report-csv
+          path: daily-report-*.csv

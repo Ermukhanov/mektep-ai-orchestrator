@@ -1,0 +1,92 @@
+{
+  "classes": [
+    {
+      "name": "1A",
+      "student_count": 21
+    },
+    {
+      "name": "1B",
+      "student_count": 21
+    },
+    {
+      "name": "2A",
+      "student_count": 25
+    },
+    {
+      "name": "2B",
+      "student_count": 21
+    },
+    {
+      "name": "3A",
+      "student_count": 25
+    },
+    {
+      "name": "3B",
+      "student_count": 23
+    },
+    {
+      "name": "4A",
+      "student_count": 20
+    },
+    {
+      "name": "4B",
+      "student_count": 23
+    },
+    {
+      "name": "5A",
+      "student_count": 24
+    },
+    {
+      "name": "5B",
+      "student_count": 23
+    },
+    {
+      "name": "6A",
+      "student_count": 24
+    },
+    {
+      "name": "6B",
+      "student_count": 23
+    },
+    {
+      "name": "7A",
+      "student_count": 23
+    },
+    {
+      "name": "7B",
+      "student_count": 20
+    },
+    {
+      "name": "8A",
+      "student_count": 22
+    },
+    {
+      "name": "8B",
+      "student_count": 20
+    },
+    {
+      "name": "9A",
+      "student_count": 23
+    },
+    {
+      "name": "9B",
+      "student_count": 20
+    },
+    {
+      "name": "10A",
+      "student_count": 22
+    },
+    {
+      "name": "10B",
+      "student_count": 25
+    },
+    {
+      "name": "11A",
+      "student_count": 25
+    },
+    {
+      "name": "11B",
+      "student_count": 25
+    }
+  ]
+}

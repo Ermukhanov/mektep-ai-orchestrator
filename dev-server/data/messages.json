@@ -1,0 +1,8 @@
+{
+  "messages": [
+    { "id": "m1", "from": "teacher1", "text": "1A - 25 детей, 2 болеют" },
+    { "id": "m2", "from": "teacher2", "text": "2B - 30 детей" },
+    { "id": "m3", "from": "teacher3", "text": "В кабинете 12 сломалась парта" },
+    { "id": "m4", "from": "teacher4", "text": "3C - 28 детей, 1 отсутствует" }
+  ]
+}

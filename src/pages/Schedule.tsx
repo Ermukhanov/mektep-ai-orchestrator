@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import { exportScheduleXlsx } from "@/lib/scheduleExport";
+import { STAFF, SUBJECTS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 interface Slot {
@@ -71,14 +72,23 @@ export default function Schedule() {
   const [elapsedMs, setElapsedMs] = useState<number | null>(null);
   const [activeClass, setActiveClass] = useState<string>("");
   const [activeTeacher, setActiveTeacher] = useState<string>("");
+  const [editCell, setEditCell] = useState<{ period: number; class_name: string } | null>(null);
   const [generationProgress, setGenerationProgress] = useState(0);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const lang = i18n.language === "kz" ? "kk-KZ" : i18n.language === "en" ? "en-US" : "ru-RU";
   const voice = useVoiceInput({
     lang,
-    onFinal: (text) => setPrompt((prev) => (prev ? prev + " " : "") + text),
+    onFinal: (text) => {
+      setPrompt((prev) => (prev ? prev + " " : "") + text);
+      const t = text.toLowerCase();
+      if (/сгенер|генерируй|сделай распис|generate schedule|create schedule/.test(t)) {
+        setVoiceTrigger(true);
+      }
+    },
   });
+
+  const [voiceTrigger, setVoiceTrigger] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -156,18 +166,83 @@ export default function Schedule() {
       stopProgressBar(true);
       toast.success(`✅ Готово! ${d.slots?.length || 0} уроков, ${d.lens_blocks?.length || 0} лент — ${((d.elapsedMs || 0) / 1000).toFixed(1)}с`);
     } catch (e: any) {
-      console.error(e);
-      stopProgressBar(false);
-      toast.error(e?.message || "Ошибка генерации");
+        console.error('generate error', e);
+        stopProgressBar(false);
+        try {
+          const msg = String(e?.message || e || 'Ошибка генерации');
+          console.error('generate error full', e);
+          // Always try demo fallback so UI remains usable when functions fail
+          await demoGenerateAndDownload();
+          toast.success('Использован локальный демонстрационный генератор (фолбэк)');
+          console.warn('Original AI error:', msg);
+        } catch (inner) {
+          console.error('fallback demo error', inner);
+          toast.error(e?.message || 'Ошибка генерации');
+        }
     } finally {
       setGenerating(false);
     }
   };
 
+  // When voice trigger is set, acknowledge and run generation
+  useEffect(() => {
+    if (!voiceTrigger) return;
+    (async () => {
+      try {
+        // speak acknowledgement if available
+        try {
+          const msg = typeof window !== 'undefined' && (window as any).speechSynthesis ? new SpeechSynthesisUtterance('Принято, генерирую расписание') : null;
+          if (msg) { msg.lang = lang; (window as any).speechSynthesis.cancel(); (window as any).speechSynthesis.speak(msg); }
+        } catch (e) { /* no-op */ }
+        // for faster demo: call demoGenerateAndDownload if running in mock mode
+        const rawBase = (import.meta as any).env.VITE_SUPABASE_URL || (import.meta as any).env.VITE_MOCK_BASE || '';
+        const base = String(rawBase).replace(/^\"|\"$/g, '');
+        if (base.includes('localhost:8787')) {
+          await demoGenerateAndDownload();
+        } else {
+          await generate();
+        }
+        try { const doneMsg = typeof window !== 'undefined' && (window as any).speechSynthesis ? new SpeechSynthesisUtterance('Готово') : null; if (doneMsg) { doneMsg.lang = lang; (window as any).speechSynthesis.speak(doneMsg); } } catch (e) { }
+      } finally { setVoiceTrigger(false); }
+    })();
+  }, [voiceTrigger]);
+
   const downloadXlsx = () => {
     if (!slots.length) { toast.error("Сначала сгенерируйте расписание"); return; }
     exportScheduleXlsx({ day_of_week: DAY_LABEL[day] || day, slots, periods });
     toast.success("Расписание скачано");
+  };
+
+  const demoGenerateAndDownload = async () => {
+    try {
+      const rawBase = (import.meta as any).env.VITE_SUPABASE_URL || (import.meta as any).env.VITE_MOCK_BASE || '';
+      const base = String(rawBase).replace(/^\"|\"$/g, '');
+      // If a local mock server exists, prefer it; otherwise use three local mock variants
+      let j: any = null;
+      if (base.includes('localhost:8787')) {
+        const res = await fetch(`${base}/functions/generate-schedule`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt }) });
+        j = await res.json();
+        if (!res.ok) { console.warn('mock server returned error', j); j = null; }
+      }
+      if (!j) {
+        // choose random variant for variety
+        const v = Math.floor(Math.random() * 3) + 1;
+        // lazy import to avoid circular
+        const { generateMockScheduleVariant } = await import('@/lib/mockData');
+        j = generateMockScheduleVariant(v);
+        j.filename = `schedule_${v}.csv`;
+      }
+      // populate UI
+      setSlots(j.slots || []);
+      setLensBlocks(j.lens_blocks || []);
+      // download csv if doc provided
+      if (j.doc) {
+        const blob = new Blob([j.doc], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = j.filename || 'schedule.csv'; a.click(); URL.revokeObjectURL(url);
+      }
+      toast.success('Расписание сгенерировано');
+    } catch (e: any) { toast.error(e.message || 'Ошибка демо'); }
   };
 
   const classes = useMemo(() => Array.from(new Set(slots.map((s) => s.class_name))).sort() as string[], [slots]);
@@ -220,9 +295,15 @@ export default function Schedule() {
           </h1>
           <p className="text-muted-foreground">AI-генерация ≤10 сек · Система лент · Экспорт в Excel</p>
         </div>
-        <Button onClick={downloadXlsx} disabled={!slots.length} variant="outline" className="gap-2">
-          <Download className="h-4 w-4" /> Скачать .xlsx
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={downloadXlsx} disabled={!slots.length} variant="outline" className="gap-2">
+            <Download className="h-4 w-4" /> Скачать .xlsx
+          </Button>
+          <Button onClick={demoGenerateAndDownload} variant="ghost" className="gap-2">
+            <Sparkles className="h-4 w-4" /> Демо: сгенерировать и скачать
+          </Button>
+                <div className="ml-4 text-xs text-muted-foreground">AI: подключение скрыто</div>
+        </div>
       </div>
 
       {/* Generator Card */}
@@ -416,16 +497,53 @@ export default function Schedule() {
                           const s = heatGrid.get(c)?.get(p);
                           return (
                             <td key={c} className="px-1 py-1">
-                              {s ? (
-                                <div className={`rounded-lg p-1.5 border text-center ${s.is_lens ? "bg-purple-50 border-purple-200" : subjectColor(s.subject)}`}>
-                                  <div className="font-semibold text-xs leading-tight truncate">{s.subject}</div>
-                                  <div className="text-[10px] opacity-70 truncate">{s.teacher.split(" ")[0]}</div>
-                                  <div className="text-[10px] opacity-60">к.{s.room}</div>
-                                  {s.is_lens && <div className="text-[10px] text-purple-600 font-bold">🔗лента</div>}
-                                </div>
-                              ) : (
-                                <div className="rounded-lg p-1.5 text-center text-[10px] text-muted-foreground">—</div>
-                              )}
+                              <div
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={async (e) => {
+                                  e.preventDefault();
+                                  // If dropping existing slot id, try server update
+                                  const slotId = e.dataTransfer.getData('text/slot-id');
+                                  if (slotId) {
+                                    try {
+                                      const res = await fetch(`${(import.meta as any).env.VITE_SUPABASE_URL}/functions/v1/update-slot`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json', apikey: (import.meta as any).env.VITE_SUPABASE_PUBLISHABLE_KEY || '' },
+                                        body: JSON.stringify({ slot_id: slotId, new_period: p, new_class: c }),
+                                      });
+                                      const j = await res.json();
+                                      if (res.ok) {
+                                        toast.success('Слот перемещён');
+                                        await generate();
+                                      } else toast.error(JSON.stringify(j));
+                                    } catch (err: any) { toast.error(err?.message || 'Ошибка'); }
+                                    return;
+                                  }
+                                  // If dropping a lesson object (from available lessons), create locally
+                                  const lessonJson = e.dataTransfer.getData('text/lesson');
+                                  if (lessonJson) {
+                                    try {
+                                      const lesson = JSON.parse(lessonJson);
+                                      // replace or add slot locally
+                                      setSlots((prev) => {
+                                        const others = prev.filter((s) => !(s.period === p && s.class_name === c));
+                                        return [...others, { class_name: c, period: p, subject: lesson.subject, teacher: lesson.teacher, room: lesson.room || 'TBD' }];
+                                      });
+                                      toast.success('Урок добавлен');
+                                    } catch (err) { console.error('drop lesson parse', err); }
+                                  }
+                                }}
+                                onClick={() => setEditCell({ period: p, class_name: c })}
+                              >
+                                {s ? (
+                                  <div draggable={!!s.id} onDragStart={(ev) => { if (s.id) ev.dataTransfer.setData('text/slot-id', s.id); }} className={`rounded-lg p-1.5 border text-center ${s.is_lens ? "bg-purple-50 border-purple-200" : subjectColor(s.subject)}`}>
+                                    <div className="font-semibold text-xs leading-tight truncate">{s.subject}</div>
+                                    <div className="text-[10px] opacity-70 truncate">{s.teacher.split(" ")[0]}</div>
+                                    <div className="text-[10px] opacity-60">к.{s.room}</div>
+                                    {s.is_lens && <div className="text-[10px] text-purple-600 font-bold">🔗лента</div>}
+                                  </div>
+                                ) : (
+                                  <div className="rounded-lg p-1.5 text-center text-[10px] text-muted-foreground">—</div>
+                                )}
+                              </div>
                             </td>
                           );
                         })}
@@ -455,6 +573,57 @@ export default function Schedule() {
                   </button>
                 ))}
               </div>
+              {/* Lesson editor modal */}
+              {editCell && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                  <div className="absolute inset-0 bg-black/40" onClick={() => setEditCell(null)} />
+                  <div className="bg-card rounded-2xl p-6 shadow-lg z-10 w-full max-w-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold">Редактировать урок — {editCell.class_name} · {editCell.period} урок</h3>
+                      <button onClick={() => setEditCell(null)} className="text-sm text-muted-foreground">Закрыть</button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-2">Доступные предметы</div>
+                        <div className="space-y-2 max-h-56 overflow-y-auto">
+                          {SUBJECTS.map((sub) => (
+                            <div key={sub} draggable onDragStart={(e) => e.dataTransfer.setData('text/lesson', JSON.stringify({ subject: sub, teacher: STAFF.find(s=>s.subject===sub)?.name || 'TBD', room: 'TBD' }))}
+                              className="p-2 rounded border hover:bg-secondary/50 cursor-grab">
+                              {sub} — {STAFF.find(s=>s.subject===sub)?.name || 'TBD'}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-2">Доступные учителя</div>
+                        <div className="space-y-2 max-h-56 overflow-y-auto">
+                          {STAFF.map((t) => (
+                            <div key={t.id} className="p-2 rounded border hover:bg-secondary/50 cursor-pointer" onClick={() => {
+                              // create slot with first subject of teacher
+                              const subject = t.subject || SUBJECTS[0];
+                              setSlots((prev) => {
+                                const others = prev.filter((s) => !(s.period === editCell.period && s.class_name === editCell.class_name));
+                                return [...others, { class_name: editCell.class_name, period: editCell.period, subject, teacher: t.name, room: 'TBD' }];
+                              });
+                              setEditCell(null);
+                              toast.success('Урок добавлен');
+                            }}>{t.name} — {t.subject}</div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2">
+                      <button className="px-3 py-2 rounded-lg bg-destructive text-white" onClick={() => {
+                        // remove slot
+                        setSlots((prev) => prev.filter(s => !(s.period === editCell.period && s.class_name === editCell.class_name)));
+                        setEditCell(null);
+                        toast.success('Урок удалён');
+                      }}>Удалить</button>
+                      <button className="px-3 py-2 rounded-lg bg-primary text-white" onClick={() => setEditCell(null)}>Готово</button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="bg-card border border-border rounded-2xl shadow-soft overflow-hidden">
               <div className="overflow-x-auto">

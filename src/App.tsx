@@ -16,8 +16,15 @@ import Inbox from "./pages/Inbox";
 import Chats from "./pages/Chats";
 import Schedule from "./pages/Schedule";
 import Legal from "./pages/Legal";
+import Orders from "./pages/Orders";
+import Substitutions from "./pages/Substitutions";
+import Director from "./pages/Director";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
+import MorningReports from "./pages/MorningReports";
+import WAOutboundLogs from "./pages/WAOutboundLogs";
+import TeacherSchedule from "./pages/TeacherSchedule";
+import Attendance from "./pages/Attendance";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -27,6 +34,7 @@ const App = () => (
     <TooltipProvider>
       <Sonner position="top-right" />
       <AppProvider>
+        {/* Mock banner removed per user request */}
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -40,6 +48,13 @@ const App = () => (
               <Route path="chats" element={<Chats />} />
               <Route path="schedule" element={<Schedule />} />
               <Route path="legal" element={<Legal />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="morning-reports" element={<MorningReports />} />
+              <Route path="wa-logs" element={<WAOutboundLogs />} />
+              <Route path="attendance" element={<Attendance />} />
+              <Route path="teacher-schedule" element={<TeacherSchedule />} />
+              <Route path="substitutions" element={<Substitutions />} />
+              <Route path="director" element={<Director />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="profile" element={<Profile />} />
             </Route>

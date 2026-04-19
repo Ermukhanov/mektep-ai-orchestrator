@@ -4,14 +4,124 @@ import type { Database } from './types';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Normalize publishable key (strip quotes if present)
+const SUPABASE_PUBLISHABLE_KEY_STR = String(SUPABASE_PUBLISHABLE_KEY || '').replace(/^"|"$/g, '');
+// Normalize env values: .env may contain quoted values, and some builds set only SUPABASE_URL
+const RAW_USE_MOCK = String((import.meta as any).env.VITE_USE_MOCK || '').replace(/^\"|\"$/g, '');
+const MOCK_BASE = String((import.meta as any).env.VITE_MOCK_BASE || 'http://localhost:8787').replace(/^\"|\"$/g, '');
+const SUPABASE_URL_STR = String(SUPABASE_URL || '').replace(/^\"|\"$/g, '');
+const USE_MOCK = RAW_USE_MOCK === 'true' || SUPABASE_URL_STR.includes('localhost');
+// Derive project ref from publishable key when possible
+let keyRef: string | null = null;
+try {
+  if (SUPABASE_PUBLISHABLE_KEY_STR) {
+    const parts = SUPABASE_PUBLISHABLE_KEY_STR.split('.');
+    if (parts.length >= 2) {
+      const payload = JSON.parse(typeof atob === 'function' ? atob(parts[1]) : Buffer.from(parts[1], 'base64').toString('utf8'));
+      keyRef = payload?.ref || null;
+    }
+  }
+} catch (e) { keyRef = null; }
+
+// Choose effective Supabase URL in this order:
+// 1) If SUPABASE_URL explicitly provided and appears to match keyRef, use it.
+// 2) If SUPABASE_PROJECT_ID env provided, construct URL from it.
+// 3) If publishable key contains a ref, construct URL from that.
+// 4) If mock requested, fall back to MOCK_BASE.
+let EFFECTIVE_SUPABASE_URL = '';
+if (SUPABASE_URL_STR) {
+  // if URL contains keyRef or no keyRef known, prefer provided URL
+  if (!keyRef || SUPABASE_URL_STR.includes(keyRef)) {
+    EFFECTIVE_SUPABASE_URL = SUPABASE_URL_STR;
+  }
+}
+if (!EFFECTIVE_SUPABASE_URL) {
+  const PROJECT_ID = String((import.meta as any).env.VITE_SUPABASE_PROJECT_ID || '').replace(/^"|"$/g, '');
+  const refToUse = PROJECT_ID || keyRef;
+  if (refToUse) EFFECTIVE_SUPABASE_URL = `https://${refToUse}.supabase.co`;
+}
+if (!EFFECTIVE_SUPABASE_URL) EFFECTIVE_SUPABASE_URL = (RAW_USE_MOCK === 'true' ? MOCK_BASE : '');
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient<Database>(EFFECTIVE_SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY_STR, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  // Enable realtime only when a real Supabase URL is configured
+  realtime: {
+    enabled: !!SUPABASE_URL_STR
+  } as any,
 });
+
+// Export normalized key for other modules that need to call functions/v1 directly
+export const SUPABASE_KEY = SUPABASE_PUBLISHABLE_KEY_STR;
+
+// If mock mode is explicitly enabled, provide lightweight mock overrides
+if (typeof window !== 'undefined' && RAW_USE_MOCK === 'true') {
+  const BASE = MOCK_BASE;
+
+  // --- Mock functions.invoke: always install when VITE_USE_MOCK=true so NFC/WA can be mocked
+  const realInvoke = (supabase.functions as any).invoke.bind(supabase.functions);
+  // @ts-ignore
+  supabase.functions.invoke = async (name: string, opts?: any) => {
+    try {
+      // Route only NFC/WA/substitution-related function calls to local mock
+      if (name === 'nfc-scan' || name === 'get-attendance' || name === 'nfc-scan-mock' || name === 'wa_outbound_logs' || name === 'smart-substitute') {
+        const url = `${BASE}/functions/${name}`;
+        const method = opts && opts.body ? 'POST' : 'GET';
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: opts && opts.body ? JSON.stringify(opts.body) : undefined });
+        const json = await res.json().catch(() => null);
+        if (!res.ok) return { data: null, error: { message: json?.error || `ошибка тестового сервера для ${name}` } };
+        return { data: json, error: null };
+      }
+      // Otherwise forward to real Supabase functions.invoke
+      return await realInvoke(name, opts);
+    } catch (e: any) { return { data: null, error: { message: e.message || String(e) } }; }
+  };
+
+  // --- Mock auth: only enable lightweight local auth when no real SUPABASE_URL is configured
+  if (!SUPABASE_URL_STR) {
+    // Provide a lightweight mock auth implementation stored in localStorage
+    const MOCK_AUTH_KEY = '__mektep_mock_session';
+    const listeners: Array<(event: string, session: any) => void> = [];
+    const readSession = () => { try { return JSON.parse(localStorage.getItem(MOCK_AUTH_KEY) || 'null'); } catch { return null; } };
+    const writeSession = (session: any) => { localStorage.setItem(MOCK_AUTH_KEY, JSON.stringify(session)); };
+
+    // Mock signInWithPassword
+    // @ts-ignore
+    supabase.auth.signInWithPassword = async ({ email }: any) => {
+      const session = { user: { id: `local-${email}`, email }, access_token: 'mock-token', expires_at: Date.now() + 60 * 60 * 1000 };
+      writeSession({ session });
+      for (const l of listeners) l('SIGNED_IN', { session });
+      return { data: { session }, error: null };
+    };
+
+    // Mock signUp
+    // @ts-ignore
+    supabase.auth.signUp = async ({ email, options }: any) => {
+      const session = { user: { id: `local-${email}`, email, user_metadata: options?.data || {} }, access_token: 'mock-token', expires_at: Date.now() + 60 * 60 * 1000 };
+      writeSession({ session });
+      for (const l of listeners) l('SIGNED_IN', { session });
+      return { data: { user: session.user }, error: null };
+    };
+
+    // Mock getSession
+    // @ts-ignore
+    supabase.auth.getSession = async () => {
+      const s = readSession();
+      return { data: { session: s?.session || null } };
+    };
+
+    // Mock onAuthStateChange
+    // @ts-ignore
+    supabase.auth.onAuthStateChange = (cb: any) => { listeners.push(cb); return { data: { subscription: { unsubscribe: () => { /* noop */ } } } }; };
+
+    // Mock signOut
+    // @ts-ignore
+    supabase.auth.signOut = async () => { localStorage.removeItem(MOCK_AUTH_KEY); for (const l of listeners) l('SIGNED_OUT', { session: null }); return { error: null }; };
+  }
+}

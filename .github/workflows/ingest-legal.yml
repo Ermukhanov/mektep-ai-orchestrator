@@ -1,0 +1,23 @@
+name: Ingest Legal Templates
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call ingest-legal-templates function
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -e
+          echo "Calling ingest-legal-templates..."
+          HTTP_STATUS=$(curl -s -w "%{http_code}" -o /tmp/ingest.json -X POST "${SUPABASE_URL}/functions/v1/ingest-legal-templates" \
+            -H "Content-Type: application/json" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" || true)
+          echo "HTTP status: $HTTP_STATUS"
+          cat /tmp/ingest.json
+          if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "201" ]; then exit 1; fi

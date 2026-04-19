@@ -1,6 +1,7 @@
 // MEKTEP AI — Legal Document Generator
 // Generates school orders/documents based on Kazakhstani Ministry templates
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { callAlem } from "../_shared/llm.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -209,57 +210,47 @@ ${orders?.length ? `Контекст (действующие приказы МО
 
 Сгенерируй официальный документ, заполнив все поля из запроса. Язык: ${language || "ru"}.`;
 
-    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "",
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001", // Fast model for doc generation
-        max_tokens: 4000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: userPrompt }],
-        tools: buildDocTools(),
-        tool_choice: { type: "tool", name: "generate_document" },
-      }),
-    });
-
-    if (!aiRes.ok) {
-      // Fallback to Lovable gateway
-      const fallback = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    let aiJson: any;
+    try {
+      aiJson = await callAlem('/v1/chat/completions', {
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: userPrompt },
+        ],
+        tools: [{ type: "function", function: buildDocTools()[0].function }],
+        tool_choice: { type: "function", function: { name: "generate_document" } },
+      });
+    } catch (alemErr) {
+      // fallback to Anthropic
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
-          "Content-Type": "application/json",
+          "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: userPrompt },
-          ],
-          tools: [{ type: "function", function: buildDocTools()[0].function }],
-          tool_choice: { type: "function", function: { name: "generate_document" } },
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 4000,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: "user", content: userPrompt }],
+          tools: buildDocTools(),
+          tool_choice: { type: "tool", name: "generate_document" },
         }),
       });
-
-      if (!fallback.ok) throw new Error("AI unavailable");
-      const fbj = await fallback.json();
-      const call = fbj.choices?.[0]?.message?.tool_calls?.[0];
-      if (!call) throw new Error("No tool call");
-      const doc = JSON.parse(call.function.arguments);
-      return new Response(JSON.stringify({ ok: true, document: doc, template_type: detectedType }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        console.error('Document generation failed', txt, alemErr);
+        return new Response(JSON.stringify({ error: 'AI unavailable', detail: txt }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+      aiJson = await res.json();
     }
 
-    const aiJson = await aiRes.json();
-    const toolUse = aiJson.content?.find((c: any) => c.type === "tool_use");
-    if (!toolUse) throw new Error("No tool use in response");
+    const toolUse = aiJson.content?.find((c: any) => c.type === "tool_use") || aiJson.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolUse) throw new Error("No tool call");
 
-    const doc = toolUse.input;
+    const doc = toolUse.input || JSON.parse(toolUse.function?.arguments || '{}');
 
     // Save to legal_documents table
     await supabase.from("legal_documents").insert({

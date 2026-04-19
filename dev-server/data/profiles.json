@@ -1,0 +1,2992 @@
+{
+  "profiles": [
+    {
+      "id": "s-1",
+      "full_name": "Ученик 1",
+      "class_name": "1A",
+      "uid": "uid-1"
+    },
+    {
+      "id": "s-2",
+      "full_name": "Ученик 2",
+      "class_name": "1A",
+      "uid": "uid-2"
+    },
+    {
+      "id": "s-3",
+      "full_name": "Ученик 3",
+      "class_name": "1A",
+      "uid": "uid-3"
+    },
+    {
+      "id": "s-4",
+      "full_name": "Ученик 4",
+      "class_name": "1A",
+      "uid": "uid-4"
+    },
+    {
+      "id": "s-5",
+      "full_name": "Ученик 5",
+      "class_name": "1A",
+      "uid": "uid-5"
+    },
+    {
+      "id": "s-6",
+      "full_name": "Ученик 6",
+      "class_name": "1A",
+      "uid": "uid-6"
+    },
+    {
+      "id": "s-7",
+      "full_name": "Ученик 7",
+      "class_name": "1A",
+      "uid": "uid-7"
+    },
+    {
+      "id": "s-8",
+      "full_name": "Ученик 8",
+      "class_name": "1A",
+      "uid": "uid-8"
+    },
+    {
+      "id": "s-9",
+      "full_name": "Ученик 9",
+      "class_name": "1A",
+      "uid": "uid-9"
+    },
+    {
+      "id": "s-10",
+      "full_name": "Ученик 10",
+      "class_name": "1A",
+      "uid": "uid-10"
+    },
+    {
+      "id": "s-11",
+      "full_name": "Ученик 11",
+      "class_name": "1A",
+      "uid": "uid-11"
+    },
+    {
+      "id": "s-12",
+      "full_name": "Ученик 12",
+      "class_name": "1A",
+      "uid": "uid-12"
+    },
+    {
+      "id": "s-13",
+      "full_name": "Ученик 13",
+      "class_name": "1A",
+      "uid": "uid-13"
+    },
+    {
+      "id": "s-14",
+      "full_name": "Ученик 14",
+      "class_name": "1A",
+      "uid": "uid-14"
+    },
+    {
+      "id": "s-15",
+      "full_name": "Ученик 15",
+      "class_name": "1A",
+      "uid": "uid-15"
+    },
+    {
+      "id": "s-16",
+      "full_name": "Ученик 16",
+      "class_name": "1A",
+      "uid": "uid-16"
+    },
+    {
+      "id": "s-17",
+      "full_name": "Ученик 17",
+      "class_name": "1A",
+      "uid": "uid-17"
+    },
+    {
+      "id": "s-18",
+      "full_name": "Ученик 18",
+      "class_name": "1A",
+      "uid": "uid-18"
+    },
+    {
+      "id": "s-19",
+      "full_name": "Ученик 19",
+      "class_name": "1A",
+      "uid": "uid-19"
+    },
+    {
+      "id": "s-20",
+      "full_name": "Ученик 20",
+      "class_name": "1A",
+      "uid": "uid-20"
+    },
+    {
+      "id": "s-21",
+      "full_name": "Ученик 21",
+      "class_name": "1A",
+      "uid": "uid-21"
+    },
+    {
+      "id": "s-22",
+      "full_name": "Ученик 22",
+      "class_name": "1B",
+      "uid": "uid-22"
+    },
+    {
+      "id": "s-23",
+      "full_name": "Ученик 23",
+      "class_name": "1B",
+      "uid": "uid-23"
+    },
+    {
+      "id": "s-24",
+      "full_name": "Ученик 24",
+      "class_name": "1B",
+      "uid": "uid-24"
+    },
+    {
+      "id": "s-25",
+      "full_name": "Ученик 25",
+      "class_name": "1B",
+      "uid": "uid-25"
+    },
+    {
+      "id": "s-26",
+      "full_name": "Ученик 26",
+      "class_name": "1B",
+      "uid": "uid-26"
+    },
+    {
+      "id": "s-27",
+      "full_name": "Ученик 27",
+      "class_name": "1B",
+      "uid": "uid-27"
+    },
+    {
+      "id": "s-28",
+      "full_name": "Ученик 28",
+      "class_name": "1B",
+      "uid": "uid-28"
+    },
+    {
+      "id": "s-29",
+      "full_name": "Ученик 29",
+      "class_name": "1B",
+      "uid": "uid-29"
+    },
+    {
+      "id": "s-30",
+      "full_name": "Ученик 30",
+      "class_name": "1B",
+      "uid": "uid-30"
+    },
+    {
+      "id": "s-31",
+      "full_name": "Ученик 31",
+      "class_name": "1B",
+      "uid": "uid-31"
+    },
+    {
+      "id": "s-32",
+      "full_name": "Ученик 32",
+      "class_name": "1B",
+      "uid": "uid-32"
+    },
+    {
+      "id": "s-33",
+      "full_name": "Ученик 33",
+      "class_name": "1B",
+      "uid": "uid-33"
+    },
+    {
+      "id": "s-34",
+      "full_name": "Ученик 34",
+      "class_name": "1B",
+      "uid": "uid-34"
+    },
+    {
+      "id": "s-35",
+      "full_name": "Ученик 35",
+      "class_name": "1B",
+      "uid": "uid-35"
+    },
+    {
+      "id": "s-36",
+      "full_name": "Ученик 36",
+      "class_name": "1B",
+      "uid": "uid-36"
+    },
+    {
+      "id": "s-37",
+      "full_name": "Ученик 37",
+      "class_name": "1B",
+      "uid": "uid-37"
+    },
+    {
+      "id": "s-38",
+      "full_name": "Ученик 38",
+      "class_name": "1B",
+      "uid": "uid-38"
+    },
+    {
+      "id": "s-39",
+      "full_name": "Ученик 39",
+      "class_name": "1B",
+      "uid": "uid-39"
+    },
+    {
+      "id": "s-40",
+      "full_name": "Ученик 40",
+      "class_name": "1B",
+      "uid": "uid-40"
+    },
+    {
+      "id": "s-41",
+      "full_name": "Ученик 41",
+      "class_name": "1B",
+      "uid": "uid-41"
+    },
+    {
+      "id": "s-42",
+      "full_name": "Ученик 42",
+      "class_name": "1B",
+      "uid": "uid-42"
+    },
+    {
+      "id": "s-43",
+      "full_name": "Ученик 43",
+      "class_name": "2A",
+      "uid": "uid-43"
+    },
+    {
+      "id": "s-44",
+      "full_name": "Ученик 44",
+      "class_name": "2A",
+      "uid": "uid-44"
+    },
+    {
+      "id": "s-45",
+      "full_name": "Ученик 45",
+      "class_name": "2A",
+      "uid": "uid-45"
+    },
+    {
+      "id": "s-46",
+      "full_name": "Ученик 46",
+      "class_name": "2A",
+      "uid": "uid-46"
+    },
+    {
+      "id": "s-47",
+      "full_name": "Ученик 47",
+      "class_name": "2A",
+      "uid": "uid-47"
+    },
+    {
+      "id": "s-48",
+      "full_name": "Ученик 48",
+      "class_name": "2A",
+      "uid": "uid-48"
+    },
+    {
+      "id": "s-49",
+      "full_name": "Ученик 49",
+      "class_name": "2A",
+      "uid": "uid-49"
+    },
+    {
+      "id": "s-50",
+      "full_name": "Ученик 50",
+      "class_name": "2A",
+      "uid": "uid-50"
+    },
+    {
+      "id": "s-51",
+      "full_name": "Ученик 51",
+      "class_name": "2A",
+      "uid": "uid-51"
+    },
+    {
+      "id": "s-52",
+      "full_name": "Ученик 52",
+      "class_name": "2A",
+      "uid": "uid-52"
+    },
+    {
+      "id": "s-53",
+      "full_name": "Ученик 53",
+      "class_name": "2A",
+      "uid": "uid-53"
+    },
+    {
+      "id": "s-54",
+      "full_name": "Ученик 54",
+      "class_name": "2A",
+      "uid": "uid-54"
+    },
+    {
+      "id": "s-55",
+      "full_name": "Ученик 55",
+      "class_name": "2A",
+      "uid": "uid-55"
+    },
+    {
+      "id": "s-56",
+      "full_name": "Ученик 56",
+      "class_name": "2A",
+      "uid": "uid-56"
+    },
+    {
+      "id": "s-57",
+      "full_name": "Ученик 57",
+      "class_name": "2A",
+      "uid": "uid-57"
+    },
+    {
+      "id": "s-58",
+      "full_name": "Ученик 58",
+      "class_name": "2A",
+      "uid": "uid-58"
+    },
+    {
+      "id": "s-59",
+      "full_name": "Ученик 59",
+      "class_name": "2A",
+      "uid": "uid-59"
+    },
+    {
+      "id": "s-60",
+      "full_name": "Ученик 60",
+      "class_name": "2A",
+      "uid": "uid-60"
+    },
+    {
+      "id": "s-61",
+      "full_name": "Ученик 61",
+      "class_name": "2A",
+      "uid": "uid-61"
+    },
+    {
+      "id": "s-62",
+      "full_name": "Ученик 62",
+      "class_name": "2A",
+      "uid": "uid-62"
+    },
+    {
+      "id": "s-63",
+      "full_name": "Ученик 63",
+      "class_name": "2A",
+      "uid": "uid-63"
+    },
+    {
+      "id": "s-64",
+      "full_name": "Ученик 64",
+      "class_name": "2A",
+      "uid": "uid-64"
+    },
+    {
+      "id": "s-65",
+      "full_name": "Ученик 65",
+      "class_name": "2A",
+      "uid": "uid-65"
+    },
+    {
+      "id": "s-66",
+      "full_name": "Ученик 66",
+      "class_name": "2A",
+      "uid": "uid-66"
+    },
+    {
+      "id": "s-67",
+      "full_name": "Ученик 67",
+      "class_name": "2A",
+      "uid": "uid-67"
+    },
+    {
+      "id": "s-68",
+      "full_name": "Ученик 68",
+      "class_name": "2B",
+      "uid": "uid-68"
+    },
+    {
+      "id": "s-69",
+      "full_name": "Ученик 69",
+      "class_name": "2B",
+      "uid": "uid-69"
+    },
+    {
+      "id": "s-70",
+      "full_name": "Ученик 70",
+      "class_name": "2B",
+      "uid": "uid-70"
+    },
+    {
+      "id": "s-71",
+      "full_name": "Ученик 71",
+      "class_name": "2B",
+      "uid": "uid-71"
+    },
+    {
+      "id": "s-72",
+      "full_name": "Ученик 72",
+      "class_name": "2B",
+      "uid": "uid-72"
+    },
+    {
+      "id": "s-73",
+      "full_name": "Ученик 73",
+      "class_name": "2B",
+      "uid": "uid-73"
+    },
+    {
+      "id": "s-74",
+      "full_name": "Ученик 74",
+      "class_name": "2B",
+      "uid": "uid-74"
+    },
+    {
+      "id": "s-75",
+      "full_name": "Ученик 75",
+      "class_name": "2B",
+      "uid": "uid-75"
+    },
+    {
+      "id": "s-76",
+      "full_name": "Ученик 76",
+      "class_name": "2B",
+      "uid": "uid-76"
+    },
+    {
+      "id": "s-77",
+      "full_name": "Ученик 77",
+      "class_name": "2B",
+      "uid": "uid-77"
+    },
+    {
+      "id": "s-78",
+      "full_name": "Ученик 78",
+      "class_name": "2B",
+      "uid": "uid-78"
+    },
+    {
+      "id": "s-79",
+      "full_name": "Ученик 79",
+      "class_name": "2B",
+      "uid": "uid-79"
+    },
+    {
+      "id": "s-80",
+      "full_name": "Ученик 80",
+      "class_name": "2B",
+      "uid": "uid-80"
+    },
+    {
+      "id": "s-81",
+      "full_name": "Ученик 81",
+      "class_name": "2B",
+      "uid": "uid-81"
+    },
+    {
+      "id": "s-82",
+      "full_name": "Ученик 82",
+      "class_name": "2B",
+      "uid": "uid-82"
+    },
+    {
+      "id": "s-83",
+      "full_name": "Ученик 83",
+      "class_name": "2B",
+      "uid": "uid-83"
+    },
+    {
+      "id": "s-84",
+      "full_name": "Ученик 84",
+      "class_name": "2B",
+      "uid": "uid-84"
+    },
+    {
+      "id": "s-85",
+      "full_name": "Ученик 85",
+      "class_name": "2B",
+      "uid": "uid-85"
+    },
+    {
+      "id": "s-86",
+      "full_name": "Ученик 86",
+      "class_name": "2B",
+      "uid": "uid-86"
+    },
+    {
+      "id": "s-87",
+      "full_name": "Ученик 87",
+      "class_name": "2B",
+      "uid": "uid-87"
+    },
+    {
+      "id": "s-88",
+      "full_name": "Ученик 88",
+      "class_name": "2B",
+      "uid": "uid-88"
+    },
+    {
+      "id": "s-89",
+      "full_name": "Ученик 89",
+      "class_name": "3A",
+      "uid": "uid-89"
+    },
+    {
+      "id": "s-90",
+      "full_name": "Ученик 90",
+      "class_name": "3A",
+      "uid": "uid-90"
+    },
+    {
+      "id": "s-91",
+      "full_name": "Ученик 91",
+      "class_name": "3A",
+      "uid": "uid-91"
+    },
+    {
+      "id": "s-92",
+      "full_name": "Ученик 92",
+      "class_name": "3A",
+      "uid": "uid-92"
+    },
+    {
+      "id": "s-93",
+      "full_name": "Ученик 93",
+      "class_name": "3A",
+      "uid": "uid-93"
+    },
+    {
+      "id": "s-94",
+      "full_name": "Ученик 94",
+      "class_name": "3A",
+      "uid": "uid-94"
+    },
+    {
+      "id": "s-95",
+      "full_name": "Ученик 95",
+      "class_name": "3A",
+      "uid": "uid-95"
+    },
+    {
+      "id": "s-96",
+      "full_name": "Ученик 96",
+      "class_name": "3A",
+      "uid": "uid-96"
+    },
+    {
+      "id": "s-97",
+      "full_name": "Ученик 97",
+      "class_name": "3A",
+      "uid": "uid-97"
+    },
+    {
+      "id": "s-98",
+      "full_name": "Ученик 98",
+      "class_name": "3A",
+      "uid": "uid-98"
+    },
+    {
+      "id": "s-99",
+      "full_name": "Ученик 99",
+      "class_name": "3A",
+      "uid": "uid-99"
+    },
+    {
+      "id": "s-100",
+      "full_name": "Ученик 100",
+      "class_name": "3A",
+      "uid": "uid-100"
+    },
+    {
+      "id": "s-101",
+      "full_name": "Ученик 101",
+      "class_name": "3A",
+      "uid": "uid-101"
+    },
+    {
+      "id": "s-102",
+      "full_name": "Ученик 102",
+      "class_name": "3A",
+      "uid": "uid-102"
+    },
+    {
+      "id": "s-103",
+      "full_name": "Ученик 103",
+      "class_name": "3A",
+      "uid": "uid-103"
+    },
+    {
+      "id": "s-104",
+      "full_name": "Ученик 104",
+      "class_name": "3A",
+      "uid": "uid-104"
+    },
+    {
+      "id": "s-105",
+      "full_name": "Ученик 105",
+      "class_name": "3A",
+      "uid": "uid-105"
+    },
+    {
+      "id": "s-106",
+      "full_name": "Ученик 106",
+      "class_name": "3A",
+      "uid": "uid-106"
+    },
+    {
+      "id": "s-107",
+      "full_name": "Ученик 107",
+      "class_name": "3A",
+      "uid": "uid-107"
+    },
+    {
+      "id": "s-108",
+      "full_name": "Ученик 108",
+      "class_name": "3A",
+      "uid": "uid-108"
+    },
+    {
+      "id": "s-109",
+      "full_name": "Ученик 109",
+      "class_name": "3A",
+      "uid": "uid-109"
+    },
+    {
+      "id": "s-110",
+      "full_name": "Ученик 110",
+      "class_name": "3A",
+      "uid": "uid-110"
+    },
+    {
+      "id": "s-111",
+      "full_name": "Ученик 111",
+      "class_name": "3A",
+      "uid": "uid-111"
+    },
+    {
+      "id": "s-112",
+      "full_name": "Ученик 112",
+      "class_name": "3A",
+      "uid": "uid-112"
+    },
+    {
+      "id": "s-113",
+      "full_name": "Ученик 113",
+      "class_name": "3A",
+      "uid": "uid-113"
+    },
+    {
+      "id": "s-114",
+      "full_name": "Ученик 114",
+      "class_name": "3B",
+      "uid": "uid-114"
+    },
+    {
+      "id": "s-115",
+      "full_name": "Ученик 115",
+      "class_name": "3B",
+      "uid": "uid-115"
+    },
+    {
+      "id": "s-116",
+      "full_name": "Ученик 116",
+      "class_name": "3B",
+      "uid": "uid-116"
+    },
+    {
+      "id": "s-117",
+      "full_name": "Ученик 117",
+      "class_name": "3B",
+      "uid": "uid-117"
+    },
+    {
+      "id": "s-118",
+      "full_name": "Ученик 118",
+      "class_name": "3B",
+      "uid": "uid-118"
+    },
+    {
+      "id": "s-119",
+      "full_name": "Ученик 119",
+      "class_name": "3B",
+      "uid": "uid-119"
+    },
+    {
+      "id": "s-120",
+      "full_name": "Ученик 120",
+      "class_name": "3B",
+      "uid": "uid-120"
+    },
+    {
+      "id": "s-121",
+      "full_name": "Ученик 121",
+      "class_name": "3B",
+      "uid": "uid-121"
+    },
+    {
+      "id": "s-122",
+      "full_name": "Ученик 122",
+      "class_name": "3B",
+      "uid": "uid-122"
+    },
+    {
+      "id": "s-123",
+      "full_name": "Ученик 123",
+      "class_name": "3B",
+      "uid": "uid-123"
+    },
+    {
+      "id": "s-124",
+      "full_name": "Ученик 124",
+      "class_name": "3B",
+      "uid": "uid-124"
+    },
+    {
+      "id": "s-125",
+      "full_name": "Ученик 125",
+      "class_name": "3B",
+      "uid": "uid-125"
+    },
+    {
+      "id": "s-126",
+      "full_name": "Ученик 126",
+      "class_name": "3B",
+      "uid": "uid-126"
+    },
+    {
+      "id": "s-127",
+      "full_name": "Ученик 127",
+      "class_name": "3B",
+      "uid": "uid-127"
+    },
+    {
+      "id": "s-128",
+      "full_name": "Ученик 128",
+      "class_name": "3B",
+      "uid": "uid-128"
+    },
+    {
+      "id": "s-129",
+      "full_name": "Ученик 129",
+      "class_name": "3B",
+      "uid": "uid-129"
+    },
+    {
+      "id": "s-130",
+      "full_name": "Ученик 130",
+      "class_name": "3B",
+      "uid": "uid-130"
+    },
+    {
+      "id": "s-131",
+      "full_name": "Ученик 131",
+      "class_name": "3B",
+      "uid": "uid-131"
+    },
+    {
+      "id": "s-132",
+      "full_name": "Ученик 132",
+      "class_name": "3B",
+      "uid": "uid-132"
+    },
+    {
+      "id": "s-133",
+      "full_name": "Ученик 133",
+      "class_name": "3B",
+      "uid": "uid-133"
+    },
+    {
+      "id": "s-134",
+      "full_name": "Ученик 134",
+      "class_name": "3B",
+      "uid": "uid-134"
+    },
+    {
+      "id": "s-135",
+      "full_name": "Ученик 135",
+      "class_name": "3B",
+      "uid": "uid-135"
+    },
+    {
+      "id": "s-136",
+      "full_name": "Ученик 136",
+      "class_name": "3B",
+      "uid": "uid-136"
+    },
+    {
+      "id": "s-137",
+      "full_name": "Ученик 137",
+      "class_name": "4A",
+      "uid": "uid-137"
+    },
+    {
+      "id": "s-138",
+      "full_name": "Ученик 138",
+      "class_name": "4A",
+      "uid": "uid-138"
+    },
+    {
+      "id": "s-139",
+      "full_name": "Ученик 139",
+      "class_name": "4A",
+      "uid": "uid-139"
+    },
+    {
+      "id": "s-140",
+      "full_name": "Ученик 140",
+      "class_name": "4A",
+      "uid": "uid-140"
+    },
+    {
+      "id": "s-141",
+      "full_name": "Ученик 141",
+      "class_name": "4A",
+      "uid": "uid-141"
+    },
+    {
+      "id": "s-142",
+      "full_name": "Ученик 142",
+      "class_name": "4A",
+      "uid": "uid-142"
+    },
+    {
+      "id": "s-143",
+      "full_name": "Ученик 143",
+      "class_name": "4A",
+      "uid": "uid-143"
+    },
+    {
+      "id": "s-144",
+      "full_name": "Ученик 144",
+      "class_name": "4A",
+      "uid": "uid-144"
+    },
+    {
+      "id": "s-145",
+      "full_name": "Ученик 145",
+      "class_name": "4A",
+      "uid": "uid-145"
+    },
+    {
+      "id": "s-146",
+      "full_name": "Ученик 146",
+      "class_name": "4A",
+      "uid": "uid-146"
+    },
+    {
+      "id": "s-147",
+      "full_name": "Ученик 147",
+      "class_name": "4A",
+      "uid": "uid-147"
+    },
+    {
+      "id": "s-148",
+      "full_name": "Ученик 148",
+      "class_name": "4A",
+      "uid": "uid-148"
+    },
+    {
+      "id": "s-149",
+      "full_name": "Ученик 149",
+      "class_name": "4A",
+      "uid": "uid-149"
+    },
+    {
+      "id": "s-150",
+      "full_name": "Ученик 150",
+      "class_name": "4A",
+      "uid": "uid-150"
+    },
+    {
+      "id": "s-151",
+      "full_name": "Ученик 151",
+      "class_name": "4A",
+      "uid": "uid-151"
+    },
+    {
+      "id": "s-152",
+      "full_name": "Ученик 152",
+      "class_name": "4A",
+      "uid": "uid-152"
+    },
+    {
+      "id": "s-153",
+      "full_name": "Ученик 153",
+      "class_name": "4A",
+      "uid": "uid-153"
+    },
+    {
+      "id": "s-154",
+      "full_name": "Ученик 154",
+      "class_name": "4A",
+      "uid": "uid-154"
+    },
+    {
+      "id": "s-155",
+      "full_name": "Ученик 155",
+      "class_name": "4A",
+      "uid": "uid-155"
+    },
+    {
+      "id": "s-156",
+      "full_name": "Ученик 156",
+      "class_name": "4A",
+      "uid": "uid-156"
+    },
+    {
+      "id": "s-157",
+      "full_name": "Ученик 157",
+      "class_name": "4B",
+      "uid": "uid-157"
+    },
+    {
+      "id": "s-158",
+      "full_name": "Ученик 158",
+      "class_name": "4B",
+      "uid": "uid-158"
+    },
+    {
+      "id": "s-159",
+      "full_name": "Ученик 159",
+      "class_name": "4B",
+      "uid": "uid-159"
+    },
+    {
+      "id": "s-160",
+      "full_name": "Ученик 160",
+      "class_name": "4B",
+      "uid": "uid-160"
+    },
+    {
+      "id": "s-161",
+      "full_name": "Ученик 161",
+      "class_name": "4B",
+      "uid": "uid-161"
+    },
+    {
+      "id": "s-162",
+      "full_name": "Ученик 162",
+      "class_name": "4B",
+      "uid": "uid-162"
+    },
+    {
+      "id": "s-163",
+      "full_name": "Ученик 163",
+      "class_name": "4B",
+      "uid": "uid-163"
+    },
+    {
+      "id": "s-164",
+      "full_name": "Ученик 164",
+      "class_name": "4B",
+      "uid": "uid-164"
+    },
+    {
+      "id": "s-165",
+      "full_name": "Ученик 165",
+      "class_name": "4B",
+      "uid": "uid-165"
+    },
+    {
+      "id": "s-166",
+      "full_name": "Ученик 166",
+      "class_name": "4B",
+      "uid": "uid-166"
+    },
+    {
+      "id": "s-167",
+      "full_name": "Ученик 167",
+      "class_name": "4B",
+      "uid": "uid-167"
+    },
+    {
+      "id": "s-168",
+      "full_name": "Ученик 168",
+      "class_name": "4B",
+      "uid": "uid-168"
+    },
+    {
+      "id": "s-169",
+      "full_name": "Ученик 169",
+      "class_name": "4B",
+      "uid": "uid-169"
+    },
+    {
+      "id": "s-170",
+      "full_name": "Ученик 170",
+      "class_name": "4B",
+      "uid": "uid-170"
+    },
+    {
+      "id": "s-171",
+      "full_name": "Ученик 171",
+      "class_name": "4B",
+      "uid": "uid-171"
+    },
+    {
+      "id": "s-172",
+      "full_name": "Ученик 172",
+      "class_name": "4B",
+      "uid": "uid-172"
+    },
+    {
+      "id": "s-173",
+      "full_name": "Ученик 173",
+      "class_name": "4B",
+      "uid": "uid-173"
+    },
+    {
+      "id": "s-174",
+      "full_name": "Ученик 174",
+      "class_name": "4B",
+      "uid": "uid-174"
+    },
+    {
+      "id": "s-175",
+      "full_name": "Ученик 175",
+      "class_name": "4B",
+      "uid": "uid-175"
+    },
+    {
+      "id": "s-176",
+      "full_name": "Ученик 176",
+      "class_name": "4B",
+      "uid": "uid-176"
+    },
+    {
+      "id": "s-177",
+      "full_name": "Ученик 177",
+      "class_name": "4B",
+      "uid": "uid-177"
+    },
+    {
+      "id": "s-178",
+      "full_name": "Ученик 178",
+      "class_name": "4B",
+      "uid": "uid-178"
+    },
+    {
+      "id": "s-179",
+      "full_name": "Ученик 179",
+      "class_name": "4B",
+      "uid": "uid-179"
+    },
+    {
+      "id": "s-180",
+      "full_name": "Ученик 180",
+      "class_name": "5A",
+      "uid": "uid-180"
+    },
+    {
+      "id": "s-181",
+      "full_name": "Ученик 181",
+      "class_name": "5A",
+      "uid": "uid-181"
+    },
+    {
+      "id": "s-182",
+      "full_name": "Ученик 182",
+      "class_name": "5A",
+      "uid": "uid-182"
+    },
+    {
+      "id": "s-183",
+      "full_name": "Ученик 183",
+      "class_name": "5A",
+      "uid": "uid-183"
+    },
+    {
+      "id": "s-184",
+      "full_name": "Ученик 184",
+      "class_name": "5A",
+      "uid": "uid-184"
+    },
+    {
+      "id": "s-185",
+      "full_name": "Ученик 185",
+      "class_name": "5A",
+      "uid": "uid-185"
+    },
+    {
+      "id": "s-186",
+      "full_name": "Ученик 186",
+      "class_name": "5A",
+      "uid": "uid-186"
+    },
+    {
+      "id": "s-187",
+      "full_name": "Ученик 187",
+      "class_name": "5A",
+      "uid": "uid-187"
+    },
+    {
+      "id": "s-188",
+      "full_name": "Ученик 188",
+      "class_name": "5A",
+      "uid": "uid-188"
+    },
+    {
+      "id": "s-189",
+      "full_name": "Ученик 189",
+      "class_name": "5A",
+      "uid": "uid-189"
+    },
+    {
+      "id": "s-190",
+      "full_name": "Ученик 190",
+      "class_name": "5A",
+      "uid": "uid-190"
+    },
+    {
+      "id": "s-191",
+      "full_name": "Ученик 191",
+      "class_name": "5A",
+      "uid": "uid-191"
+    },
+    {
+      "id": "s-192",
+      "full_name": "Ученик 192",
+      "class_name": "5A",
+      "uid": "uid-192"
+    },
+    {
+      "id": "s-193",
+      "full_name": "Ученик 193",
+      "class_name": "5A",
+      "uid": "uid-193"
+    },
+    {
+      "id": "s-194",
+      "full_name": "Ученик 194",
+      "class_name": "5A",
+      "uid": "uid-194"
+    },
+    {
+      "id": "s-195",
+      "full_name": "Ученик 195",
+      "class_name": "5A",
+      "uid": "uid-195"
+    },
+    {
+      "id": "s-196",
+      "full_name": "Ученик 196",
+      "class_name": "5A",
+      "uid": "uid-196"
+    },
+    {
+      "id": "s-197",
+      "full_name": "Ученик 197",
+      "class_name": "5A",
+      "uid": "uid-197"
+    },
+    {
+      "id": "s-198",
+      "full_name": "Ученик 198",
+      "class_name": "5A",
+      "uid": "uid-198"
+    },
+    {
+      "id": "s-199",
+      "full_name": "Ученик 199",
+      "class_name": "5A",
+      "uid": "uid-199"
+    },
+    {
+      "id": "s-200",
+      "full_name": "Ученик 200",
+      "class_name": "5A",
+      "uid": "uid-200"
+    },
+    {
+      "id": "s-201",
+      "full_name": "Ученик 201",
+      "class_name": "5A",
+      "uid": "uid-201"
+    },
+    {
+      "id": "s-202",
+      "full_name": "Ученик 202",
+      "class_name": "5A",
+      "uid": "uid-202"
+    },
+    {
+      "id": "s-203",
+      "full_name": "Ученик 203",
+      "class_name": "5A",
+      "uid": "uid-203"
+    },
+    {
+      "id": "s-204",
+      "full_name": "Ученик 204",
+      "class_name": "5B",
+      "uid": "uid-204"
+    },
+    {
+      "id": "s-205",
+      "full_name": "Ученик 205",
+      "class_name": "5B",
+      "uid": "uid-205"
+    },
+    {
+      "id": "s-206",
+      "full_name": "Ученик 206",
+      "class_name": "5B",
+      "uid": "uid-206"
+    },
+    {
+      "id": "s-207",
+      "full_name": "Ученик 207",
+      "class_name": "5B",
+      "uid": "uid-207"
+    },
+    {
+      "id": "s-208",
+      "full_name": "Ученик 208",
+      "class_name": "5B",
+      "uid": "uid-208"
+    },
+    {
+      "id": "s-209",
+      "full_name": "Ученик 209",
+      "class_name": "5B",
+      "uid": "uid-209"
+    },
+    {
+      "id": "s-210",
+      "full_name": "Ученик 210",
+      "class_name": "5B",
+      "uid": "uid-210"
+    },
+    {
+      "id": "s-211",
+      "full_name": "Ученик 211",
+      "class_name": "5B",
+      "uid": "uid-211"
+    },
+    {
+      "id": "s-212",
+      "full_name": "Ученик 212",
+      "class_name": "5B",
+      "uid": "uid-212"
+    },
+    {
+      "id": "s-213",
+      "full_name": "Ученик 213",
+      "class_name": "5B",
+      "uid": "uid-213"
+    },
+    {
+      "id": "s-214",
+      "full_name": "Ученик 214",
+      "class_name": "5B",
+      "uid": "uid-214"
+    },
+    {
+      "id": "s-215",
+      "full_name": "Ученик 215",
+      "class_name": "5B",
+      "uid": "uid-215"
+    },
+    {
+      "id": "s-216",
+      "full_name": "Ученик 216",
+      "class_name": "5B",
+      "uid": "uid-216"
+    },
+    {
+      "id": "s-217",
+      "full_name": "Ученик 217",
+      "class_name": "5B",
+      "uid": "uid-217"
+    },
+    {
+      "id": "s-218",
+      "full_name": "Ученик 218",
+      "class_name": "5B",
+      "uid": "uid-218"
+    },
+    {
+      "id": "s-219",
+      "full_name": "Ученик 219",
+      "class_name": "5B",
+      "uid": "uid-219"
+    },
+    {
+      "id": "s-220",
+      "full_name": "Ученик 220",
+      "class_name": "5B",
+      "uid": "uid-220"
+    },
+    {
+      "id": "s-221",
+      "full_name": "Ученик 221",
+      "class_name": "5B",
+      "uid": "uid-221"
+    },
+    {
+      "id": "s-222",
+      "full_name": "Ученик 222",
+      "class_name": "5B",
+      "uid": "uid-222"
+    },
+    {
+      "id": "s-223",
+      "full_name": "Ученик 223",
+      "class_name": "5B",
+      "uid": "uid-223"
+    },
+    {
+      "id": "s-224",
+      "full_name": "Ученик 224",
+      "class_name": "5B",
+      "uid": "uid-224"
+    },
+    {
+      "id": "s-225",
+      "full_name": "Ученик 225",
+      "class_name": "5B",
+      "uid": "uid-225"
+    },
+    {
+      "id": "s-226",
+      "full_name": "Ученик 226",
+      "class_name": "5B",
+      "uid": "uid-226"
+    },
+    {
+      "id": "s-227",
+      "full_name": "Ученик 227",
+      "class_name": "6A",
+      "uid": "uid-227"
+    },
+    {
+      "id": "s-228",
+      "full_name": "Ученик 228",
+      "class_name": "6A",
+      "uid": "uid-228"
+    },
+    {
+      "id": "s-229",
+      "full_name": "Ученик 229",
+      "class_name": "6A",
+      "uid": "uid-229"
+    },
+    {
+      "id": "s-230",
+      "full_name": "Ученик 230",
+      "class_name": "6A",
+      "uid": "uid-230"
+    },
+    {
+      "id": "s-231",
+      "full_name": "Ученик 231",
+      "class_name": "6A",
+      "uid": "uid-231"
+    },
+    {
+      "id": "s-232",
+      "full_name": "Ученик 232",
+      "class_name": "6A",
+      "uid": "uid-232"
+    },
+    {
+      "id": "s-233",
+      "full_name": "Ученик 233",
+      "class_name": "6A",
+      "uid": "uid-233"
+    },
+    {
+      "id": "s-234",
+      "full_name": "Ученик 234",
+      "class_name": "6A",
+      "uid": "uid-234"
+    },
+    {
+      "id": "s-235",
+      "full_name": "Ученик 235",
+      "class_name": "6A",
+      "uid": "uid-235"
+    },
+    {
+      "id": "s-236",
+      "full_name": "Ученик 236",
+      "class_name": "6A",
+      "uid": "uid-236"
+    },
+    {
+      "id": "s-237",
+      "full_name": "Ученик 237",
+      "class_name": "6A",
+      "uid": "uid-237"
+    },
+    {
+      "id": "s-238",
+      "full_name": "Ученик 238",
+      "class_name": "6A",
+      "uid": "uid-238"
+    },
+    {
+      "id": "s-239",
+      "full_name": "Ученик 239",
+      "class_name": "6A",
+      "uid": "uid-239"
+    },
+    {
+      "id": "s-240",
+      "full_name": "Ученик 240",
+      "class_name": "6A",
+      "uid": "uid-240"
+    },
+    {
+      "id": "s-241",
+      "full_name": "Ученик 241",
+      "class_name": "6A",
+      "uid": "uid-241"
+    },
+    {
+      "id": "s-242",
+      "full_name": "Ученик 242",
+      "class_name": "6A",
+      "uid": "uid-242"
+    },
+    {
+      "id": "s-243",
+      "full_name": "Ученик 243",
+      "class_name": "6A",
+      "uid": "uid-243"
+    },
+    {
+      "id": "s-244",
+      "full_name": "Ученик 244",
+      "class_name": "6A",
+      "uid": "uid-244"
+    },
+    {
+      "id": "s-245",
+      "full_name": "Ученик 245",
+      "class_name": "6A",
+      "uid": "uid-245"
+    },
+    {
+      "id": "s-246",
+      "full_name": "Ученик 246",
+      "class_name": "6A",
+      "uid": "uid-246"
+    },
+    {
+      "id": "s-247",
+      "full_name": "Ученик 247",
+      "class_name": "6A",
+      "uid": "uid-247"
+    },
+    {
+      "id": "s-248",
+      "full_name": "Ученик 248",
+      "class_name": "6A",
+      "uid": "uid-248"
+    },
+    {
+      "id": "s-249",
+      "full_name": "Ученик 249",
+      "class_name": "6A",
+      "uid": "uid-249"
+    },
+    {
+      "id": "s-250",
+      "full_name": "Ученик 250",
+      "class_name": "6A",
+      "uid": "uid-250"
+    },
+    {
+      "id": "s-251",
+      "full_name": "Ученик 251",
+      "class_name": "6B",
+      "uid": "uid-251"
+    },
+    {
+      "id": "s-252",
+      "full_name": "Ученик 252",
+      "class_name": "6B",
+      "uid": "uid-252"
+    },
+    {
+      "id": "s-253",
+      "full_name": "Ученик 253",
+      "class_name": "6B",
+      "uid": "uid-253"
+    },
+    {
+      "id": "s-254",
+      "full_name": "Ученик 254",
+      "class_name": "6B",
+      "uid": "uid-254"
+    },
+    {
+      "id": "s-255",
+      "full_name": "Ученик 255",
+      "class_name": "6B",
+      "uid": "uid-255"
+    },
+    {
+      "id": "s-256",
+      "full_name": "Ученик 256",
+      "class_name": "6B",
+      "uid": "uid-256"
+    },
+    {
+      "id": "s-257",
+      "full_name": "Ученик 257",
+      "class_name": "6B",
+      "uid": "uid-257"
+    },
+    {
+      "id": "s-258",
+      "full_name": "Ученик 258",
+      "class_name": "6B",
+      "uid": "uid-258"
+    },
+    {
+      "id": "s-259",
+      "full_name": "Ученик 259",
+      "class_name": "6B",
+      "uid": "uid-259"
+    },
+    {
+      "id": "s-260",
+      "full_name": "Ученик 260",
+      "class_name": "6B",
+      "uid": "uid-260"
+    },
+    {
+      "id": "s-261",
+      "full_name": "Ученик 261",
+      "class_name": "6B",
+      "uid": "uid-261"
+    },
+    {
+      "id": "s-262",
+      "full_name": "Ученик 262",
+      "class_name": "6B",
+      "uid": "uid-262"
+    },
+    {
+      "id": "s-263",
+      "full_name": "Ученик 263",
+      "class_name": "6B",
+      "uid": "uid-263"
+    },
+    {
+      "id": "s-264",
+      "full_name": "Ученик 264",
+      "class_name": "6B",
+      "uid": "uid-264"
+    },
+    {
+      "id": "s-265",
+      "full_name": "Ученик 265",
+      "class_name": "6B",
+      "uid": "uid-265"
+    },
+    {
+      "id": "s-266",
+      "full_name": "Ученик 266",
+      "class_name": "6B",
+      "uid": "uid-266"
+    },
+    {
+      "id": "s-267",
+      "full_name": "Ученик 267",
+      "class_name": "6B",
+      "uid": "uid-267"
+    },
+    {
+      "id": "s-268",
+      "full_name": "Ученик 268",
+      "class_name": "6B",
+      "uid": "uid-268"
+    },
+    {
+      "id": "s-269",
+      "full_name": "Ученик 269",
+      "class_name": "6B",
+      "uid": "uid-269"
+    },
+    {
+      "id": "s-270",
+      "full_name": "Ученик 270",
+      "class_name": "6B",
+      "uid": "uid-270"
+    },
+    {
+      "id": "s-271",
+      "full_name": "Ученик 271",
+      "class_name": "6B",
+      "uid": "uid-271"
+    },
+    {
+      "id": "s-272",
+      "full_name": "Ученик 272",
+      "class_name": "6B",
+      "uid": "uid-272"
+    },
+    {
+      "id": "s-273",
+      "full_name": "Ученик 273",
+      "class_name": "6B",
+      "uid": "uid-273"
+    },
+    {
+      "id": "s-274",
+      "full_name": "Ученик 274",
+      "class_name": "7A",
+      "uid": "uid-274"
+    },
+    {
+      "id": "s-275",
+      "full_name": "Ученик 275",
+      "class_name": "7A",
+      "uid": "uid-275"
+    },
+    {
+      "id": "s-276",
+      "full_name": "Ученик 276",
+      "class_name": "7A",
+      "uid": "uid-276"
+    },
+    {
+      "id": "s-277",
+      "full_name": "Ученик 277",
+      "class_name": "7A",
+      "uid": "uid-277"
+    },
+    {
+      "id": "s-278",
+      "full_name": "Ученик 278",
+      "class_name": "7A",
+      "uid": "uid-278"
+    },
+    {
+      "id": "s-279",
+      "full_name": "Ученик 279",
+      "class_name": "7A",
+      "uid": "uid-279"
+    },
+    {
+      "id": "s-280",
+      "full_name": "Ученик 280",
+      "class_name": "7A",
+      "uid": "uid-280"
+    },
+    {
+      "id": "s-281",
+      "full_name": "Ученик 281",
+      "class_name": "7A",
+      "uid": "uid-281"
+    },
+    {
+      "id": "s-282",
+      "full_name": "Ученик 282",
+      "class_name": "7A",
+      "uid": "uid-282"
+    },
+    {
+      "id": "s-283",
+      "full_name": "Ученик 283",
+      "class_name": "7A",
+      "uid": "uid-283"
+    },
+    {
+      "id": "s-284",
+      "full_name": "Ученик 284",
+      "class_name": "7A",
+      "uid": "uid-284"
+    },
+    {
+      "id": "s-285",
+      "full_name": "Ученик 285",
+      "class_name": "7A",
+      "uid": "uid-285"
+    },
+    {
+      "id": "s-286",
+      "full_name": "Ученик 286",
+      "class_name": "7A",
+      "uid": "uid-286"
+    },
+    {
+      "id": "s-287",
+      "full_name": "Ученик 287",
+      "class_name": "7A",
+      "uid": "uid-287"
+    },
+    {
+      "id": "s-288",
+      "full_name": "Ученик 288",
+      "class_name": "7A",
+      "uid": "uid-288"
+    },
+    {
+      "id": "s-289",
+      "full_name": "Ученик 289",
+      "class_name": "7A",
+      "uid": "uid-289"
+    },
+    {
+      "id": "s-290",
+      "full_name": "Ученик 290",
+      "class_name": "7A",
+      "uid": "uid-290"
+    },
+    {
+      "id": "s-291",
+      "full_name": "Ученик 291",
+      "class_name": "7A",
+      "uid": "uid-291"
+    },
+    {
+      "id": "s-292",
+      "full_name": "Ученик 292",
+      "class_name": "7A",
+      "uid": "uid-292"
+    },
+    {
+      "id": "s-293",
+      "full_name": "Ученик 293",
+      "class_name": "7A",
+      "uid": "uid-293"
+    },
+    {
+      "id": "s-294",
+      "full_name": "Ученик 294",
+      "class_name": "7A",
+      "uid": "uid-294"
+    },
+    {
+      "id": "s-295",
+      "full_name": "Ученик 295",
+      "class_name": "7A",
+      "uid": "uid-295"
+    },
+    {
+      "id": "s-296",
+      "full_name": "Ученик 296",
+      "class_name": "7A",
+      "uid": "uid-296"
+    },
+    {
+      "id": "s-297",
+      "full_name": "Ученик 297",
+      "class_name": "7B",
+      "uid": "uid-297"
+    },
+    {
+      "id": "s-298",
+      "full_name": "Ученик 298",
+      "class_name": "7B",
+      "uid": "uid-298"
+    },
+    {
+      "id": "s-299",
+      "full_name": "Ученик 299",
+      "class_name": "7B",
+      "uid": "uid-299"
+    },
+    {
+      "id": "s-300",
+      "full_name": "Ученик 300",
+      "class_name": "7B",
+      "uid": "uid-300"
+    },
+    {
+      "id": "s-301",
+      "full_name": "Ученик 301",
+      "class_name": "7B",
+      "uid": "uid-301"
+    },
+    {
+      "id": "s-302",
+      "full_name": "Ученик 302",
+      "class_name": "7B",
+      "uid": "uid-302"
+    },
+    {
+      "id": "s-303",
+      "full_name": "Ученик 303",
+      "class_name": "7B",
+      "uid": "uid-303"
+    },
+    {
+      "id": "s-304",
+      "full_name": "Ученик 304",
+      "class_name": "7B",
+      "uid": "uid-304"
+    },
+    {
+      "id": "s-305",
+      "full_name": "Ученик 305",
+      "class_name": "7B",
+      "uid": "uid-305"
+    },
+    {
+      "id": "s-306",
+      "full_name": "Ученик 306",
+      "class_name": "7B",
+      "uid": "uid-306"
+    },
+    {
+      "id": "s-307",
+      "full_name": "Ученик 307",
+      "class_name": "7B",
+      "uid": "uid-307"
+    },
+    {
+      "id": "s-308",
+      "full_name": "Ученик 308",
+      "class_name": "7B",
+      "uid": "uid-308"
+    },
+    {
+      "id": "s-309",
+      "full_name": "Ученик 309",
+      "class_name": "7B",
+      "uid": "uid-309"
+    },
+    {
+      "id": "s-310",
+      "full_name": "Ученик 310",
+      "class_name": "7B",
+      "uid": "uid-310"
+    },
+    {
+      "id": "s-311",
+      "full_name": "Ученик 311",
+      "class_name": "7B",
+      "uid": "uid-311"
+    },
+    {
+      "id": "s-312",
+      "full_name": "Ученик 312",
+      "class_name": "7B",
+      "uid": "uid-312"
+    },
+    {
+      "id": "s-313",
+      "full_name": "Ученик 313",
+      "class_name": "7B",
+      "uid": "uid-313"
+    },
+    {
+      "id": "s-314",
+      "full_name": "Ученик 314",
+      "class_name": "7B",
+      "uid": "uid-314"
+    },
+    {
+      "id": "s-315",
+      "full_name": "Ученик 315",
+      "class_name": "7B",
+      "uid": "uid-315"
+    },
+    {
+      "id": "s-316",
+      "full_name": "Ученик 316",
+      "class_name": "7B",
+      "uid": "uid-316"
+    },
+    {
+      "id": "s-317",
+      "full_name": "Ученик 317",
+      "class_name": "8A",
+      "uid": "uid-317"
+    },
+    {
+      "id": "s-318",
+      "full_name": "Ученик 318",
+      "class_name": "8A",
+      "uid": "uid-318"
+    },
+    {
+      "id": "s-319",
+      "full_name": "Ученик 319",
+      "class_name": "8A",
+      "uid": "uid-319"
+    },
+    {
+      "id": "s-320",
+      "full_name": "Ученик 320",
+      "class_name": "8A",
+      "uid": "uid-320"
+    },
+    {
+      "id": "s-321",
+      "full_name": "Ученик 321",
+      "class_name": "8A",
+      "uid": "uid-321"
+    },
+    {
+      "id": "s-322",
+      "full_name": "Ученик 322",
+      "class_name": "8A",
+      "uid": "uid-322"
+    },
+    {
+      "id": "s-323",
+      "full_name": "Ученик 323",
+      "class_name": "8A",
+      "uid": "uid-323"
+    },
+    {
+      "id": "s-324",
+      "full_name": "Ученик 324",
+      "class_name": "8A",
+      "uid": "uid-324"
+    },
+    {
+      "id": "s-325",
+      "full_name": "Ученик 325",
+      "class_name": "8A",
+      "uid": "uid-325"
+    },
+    {
+      "id": "s-326",
+      "full_name": "Ученик 326",
+      "class_name": "8A",
+      "uid": "uid-326"
+    },
+    {
+      "id": "s-327",
+      "full_name": "Ученик 327",
+      "class_name": "8A",
+      "uid": "uid-327"
+    },
+    {
+      "id": "s-328",
+      "full_name": "Ученик 328",
+      "class_name": "8A",
+      "uid": "uid-328"
+    },
+    {
+      "id": "s-329",
+      "full_name": "Ученик 329",
+      "class_name": "8A",
+      "uid": "uid-329"
+    },
+    {
+      "id": "s-330",
+      "full_name": "Ученик 330",
+      "class_name": "8A",
+      "uid": "uid-330"
+    },
+    {
+      "id": "s-331",
+      "full_name": "Ученик 331",
+      "class_name": "8A",
+      "uid": "uid-331"
+    },
+    {
+      "id": "s-332",
+      "full_name": "Ученик 332",
+      "class_name": "8A",
+      "uid": "uid-332"
+    },
+    {
+      "id": "s-333",
+      "full_name": "Ученик 333",
+      "class_name": "8A",
+      "uid": "uid-333"
+    },
+    {
+      "id": "s-334",
+      "full_name": "Ученик 334",
+      "class_name": "8A",
+      "uid": "uid-334"
+    },
+    {
+      "id": "s-335",
+      "full_name": "Ученик 335",
+      "class_name": "8A",
+      "uid": "uid-335"
+    },
+    {
+      "id": "s-336",
+      "full_name": "Ученик 336",
+      "class_name": "8A",
+      "uid": "uid-336"
+    },
+    {
+      "id": "s-337",
+      "full_name": "Ученик 337",
+      "class_name": "8A",
+      "uid": "uid-337"
+    },
+    {
+      "id": "s-338",
+      "full_name": "Ученик 338",
+      "class_name": "8A",
+      "uid": "uid-338"
+    },
+    {
+      "id": "s-339",
+      "full_name": "Ученик 339",
+      "class_name": "8B",
+      "uid": "uid-339"
+    },
+    {
+      "id": "s-340",
+      "full_name": "Ученик 340",
+      "class_name": "8B",
+      "uid": "uid-340"
+    },
+    {
+      "id": "s-341",
+      "full_name": "Ученик 341",
+      "class_name": "8B",
+      "uid": "uid-341"
+    },
+    {
+      "id": "s-342",
+      "full_name": "Ученик 342",
+      "class_name": "8B",
+      "uid": "uid-342"
+    },
+    {
+      "id": "s-343",
+      "full_name": "Ученик 343",
+      "class_name": "8B",
+      "uid": "uid-343"
+    },
+    {
+      "id": "s-344",
+      "full_name": "Ученик 344",
+      "class_name": "8B",
+      "uid": "uid-344"
+    },
+    {
+      "id": "s-345",
+      "full_name": "Ученик 345",
+      "class_name": "8B",
+      "uid": "uid-345"
+    },
+    {
+      "id": "s-346",
+      "full_name": "Ученик 346",
+      "class_name": "8B",
+      "uid": "uid-346"
+    },
+    {
+      "id": "s-347",
+      "full_name": "Ученик 347",
+      "class_name": "8B",
+      "uid": "uid-347"
+    },
+    {
+      "id": "s-348",
+      "full_name": "Ученик 348",
+      "class_name": "8B",
+      "uid": "uid-348"
+    },
+    {
+      "id": "s-349",
+      "full_name": "Ученик 349",
+      "class_name": "8B",
+      "uid": "uid-349"
+    },
+    {
+      "id": "s-350",
+      "full_name": "Ученик 350",
+      "class_name": "8B",
+      "uid": "uid-350"
+    },
+    {
+      "id": "s-351",
+      "full_name": "Ученик 351",
+      "class_name": "8B",
+      "uid": "uid-351"
+    },
+    {
+      "id": "s-352",
+      "full_name": "Ученик 352",
+      "class_name": "8B",
+      "uid": "uid-352"
+    },
+    {
+      "id": "s-353",
+      "full_name": "Ученик 353",
+      "class_name": "8B",
+      "uid": "uid-353"
+    },
+    {
+      "id": "s-354",
+      "full_name": "Ученик 354",
+      "class_name": "8B",
+      "uid": "uid-354"
+    },
+    {
+      "id": "s-355",
+      "full_name": "Ученик 355",
+      "class_name": "8B",
+      "uid": "uid-355"
+    },
+    {
+      "id": "s-356",
+      "full_name": "Ученик 356",
+      "class_name": "8B",
+      "uid": "uid-356"
+    },
+    {
+      "id": "s-357",
+      "full_name": "Ученик 357",
+      "class_name": "8B",
+      "uid": "uid-357"
+    },
+    {
+      "id": "s-358",
+      "full_name": "Ученик 358",
+      "class_name": "8B",
+      "uid": "uid-358"
+    },
+    {
+      "id": "s-359",
+      "full_name": "Ученик 359",
+      "class_name": "9A",
+      "uid": "uid-359"
+    },
+    {
+      "id": "s-360",
+      "full_name": "Ученик 360",
+      "class_name": "9A",
+      "uid": "uid-360"
+    },
+    {
+      "id": "s-361",
+      "full_name": "Ученик 361",
+      "class_name": "9A",
+      "uid": "uid-361"
+    },
+    {
+      "id": "s-362",
+      "full_name": "Ученик 362",
+      "class_name": "9A",
+      "uid": "uid-362"
+    },
+    {
+      "id": "s-363",
+      "full_name": "Ученик 363",
+      "class_name": "9A",
+      "uid": "uid-363"
+    },
+    {
+      "id": "s-364",
+      "full_name": "Ученик 364",
+      "class_name": "9A",
+      "uid": "uid-364"
+    },
+    {
+      "id": "s-365",
+      "full_name": "Ученик 365",
+      "class_name": "9A",
+      "uid": "uid-365"
+    },
+    {
+      "id": "s-366",
+      "full_name": "Ученик 366",
+      "class_name": "9A",
+      "uid": "uid-366"
+    },
+    {
+      "id": "s-367",
+      "full_name": "Ученик 367",
+      "class_name": "9A",
+      "uid": "uid-367"
+    },
+    {
+      "id": "s-368",
+      "full_name": "Ученик 368",
+      "class_name": "9A",
+      "uid": "uid-368"
+    },
+    {
+      "id": "s-369",
+      "full_name": "Ученик 369",
+      "class_name": "9A",
+      "uid": "uid-369"
+    },
+    {
+      "id": "s-370",
+      "full_name": "Ученик 370",
+      "class_name": "9A",
+      "uid": "uid-370"
+    },
+    {
+      "id": "s-371",
+      "full_name": "Ученик 371",
+      "class_name": "9A",
+      "uid": "uid-371"
+    },
+    {
+      "id": "s-372",
+      "full_name": "Ученик 372",
+      "class_name": "9A",
+      "uid": "uid-372"
+    },
+    {
+      "id": "s-373",
+      "full_name": "Ученик 373",
+      "class_name": "9A",
+      "uid": "uid-373"
+    },
+    {
+      "id": "s-374",
+      "full_name": "Ученик 374",
+      "class_name": "9A",
+      "uid": "uid-374"
+    },
+    {
+      "id": "s-375",
+      "full_name": "Ученик 375",
+      "class_name": "9A",
+      "uid": "uid-375"
+    },
+    {
+      "id": "s-376",
+      "full_name": "Ученик 376",
+      "class_name": "9A",
+      "uid": "uid-376"
+    },
+    {
+      "id": "s-377",
+      "full_name": "Ученик 377",
+      "class_name": "9A",
+      "uid": "uid-377"
+    },
+    {
+      "id": "s-378",
+      "full_name": "Ученик 378",
+      "class_name": "9A",
+      "uid": "uid-378"
+    },
+    {
+      "id": "s-379",
+      "full_name": "Ученик 379",
+      "class_name": "9A",
+      "uid": "uid-379"
+    },
+    {
+      "id": "s-380",
+      "full_name": "Ученик 380",
+      "class_name": "9A",
+      "uid": "uid-380"
+    },
+    {
+      "id": "s-381",
+      "full_name": "Ученик 381",
+      "class_name": "9A",
+      "uid": "uid-381"
+    },
+    {
+      "id": "s-382",
+      "full_name": "Ученик 382",
+      "class_name": "9B",
+      "uid": "uid-382"
+    },
+    {
+      "id": "s-383",
+      "full_name": "Ученик 383",
+      "class_name": "9B",
+      "uid": "uid-383"
+    },
+    {
+      "id": "s-384",
+      "full_name": "Ученик 384",
+      "class_name": "9B",
+      "uid": "uid-384"
+    },
+    {
+      "id": "s-385",
+      "full_name": "Ученик 385",
+      "class_name": "9B",
+      "uid": "uid-385"
+    },
+    {
+      "id": "s-386",
+      "full_name": "Ученик 386",
+      "class_name": "9B",
+      "uid": "uid-386"
+    },
+    {
+      "id": "s-387",
+      "full_name": "Ученик 387",
+      "class_name": "9B",
+      "uid": "uid-387"
+    },
+    {
+      "id": "s-388",
+      "full_name": "Ученик 388",
+      "class_name": "9B",
+      "uid": "uid-388"
+    },
+    {
+      "id": "s-389",
+      "full_name": "Ученик 389",
+      "class_name": "9B",
+      "uid": "uid-389"
+    },
+    {
+      "id": "s-390",
+      "full_name": "Ученик 390",
+      "class_name": "9B",
+      "uid": "uid-390"
+    },
+    {
+      "id": "s-391",
+      "full_name": "Ученик 391",
+      "class_name": "9B",
+      "uid": "uid-391"
+    },
+    {
+      "id": "s-392",
+      "full_name": "Ученик 392",
+      "class_name": "9B",
+      "uid": "uid-392"
+    },
+    {
+      "id": "s-393",
+      "full_name": "Ученик 393",
+      "class_name": "9B",
+      "uid": "uid-393"
+    },
+    {
+      "id": "s-394",
+      "full_name": "Ученик 394",
+      "class_name": "9B",
+      "uid": "uid-394"
+    },
+    {
+      "id": "s-395",
+      "full_name": "Ученик 395",
+      "class_name": "9B",
+      "uid": "uid-395"
+    },
+    {
+      "id": "s-396",
+      "full_name": "Ученик 396",
+      "class_name": "9B",
+      "uid": "uid-396"
+    },
+    {
+      "id": "s-397",
+      "full_name": "Ученик 397",
+      "class_name": "9B",
+      "uid": "uid-397"
+    },
+    {
+      "id": "s-398",
+      "full_name": "Ученик 398",
+      "class_name": "9B",
+      "uid": "uid-398"
+    },
+    {
+      "id": "s-399",
+      "full_name": "Ученик 399",
+      "class_name": "9B",
+      "uid": "uid-399"
+    },
+    {
+      "id": "s-400",
+      "full_name": "Ученик 400",
+      "class_name": "9B",
+      "uid": "uid-400"
+    },
+    {
+      "id": "s-401",
+      "full_name": "Ученик 401",
+      "class_name": "9B",
+      "uid": "uid-401"
+    },
+    {
+      "id": "s-402",
+      "full_name": "Ученик 402",
+      "class_name": "10A",
+      "uid": "uid-402"
+    },
+    {
+      "id": "s-403",
+      "full_name": "Ученик 403",
+      "class_name": "10A",
+      "uid": "uid-403"
+    },
+    {
+      "id": "s-404",
+      "full_name": "Ученик 404",
+      "class_name": "10A",
+      "uid": "uid-404"
+    },
+    {
+      "id": "s-405",
+      "full_name": "Ученик 405",
+      "class_name": "10A",
+      "uid": "uid-405"
+    },
+    {
+      "id": "s-406",
+      "full_name": "Ученик 406",
+      "class_name": "10A",
+      "uid": "uid-406"
+    },
+    {
+      "id": "s-407",
+      "full_name": "Ученик 407",
+      "class_name": "10A",
+      "uid": "uid-407"
+    },
+    {
+      "id": "s-408",
+      "full_name": "Ученик 408",
+      "class_name": "10A",
+      "uid": "uid-408"
+    },
+    {
+      "id": "s-409",
+      "full_name": "Ученик 409",
+      "class_name": "10A",
+      "uid": "uid-409"
+    },
+    {
+      "id": "s-410",
+      "full_name": "Ученик 410",
+      "class_name": "10A",
+      "uid": "uid-410"
+    },
+    {
+      "id": "s-411",
+      "full_name": "Ученик 411",
+      "class_name": "10A",
+      "uid": "uid-411"
+    },
+    {
+      "id": "s-412",
+      "full_name": "Ученик 412",
+      "class_name": "10A",
+      "uid": "uid-412"
+    },
+    {
+      "id": "s-413",
+      "full_name": "Ученик 413",
+      "class_name": "10A",
+      "uid": "uid-413"
+    },
+    {
+      "id": "s-414",
+      "full_name": "Ученик 414",
+      "class_name": "10A",
+      "uid": "uid-414"
+    },
+    {
+      "id": "s-415",
+      "full_name": "Ученик 415",
+      "class_name": "10A",
+      "uid": "uid-415"
+    },
+    {
+      "id": "s-416",
+      "full_name": "Ученик 416",
+      "class_name": "10A",
+      "uid": "uid-416"
+    },
+    {
+      "id": "s-417",
+      "full_name": "Ученик 417",
+      "class_name": "10A",
+      "uid": "uid-417"
+    },
+    {
+      "id": "s-418",
+      "full_name": "Ученик 418",
+      "class_name": "10A",
+      "uid": "uid-418"
+    },
+    {
+      "id": "s-419",
+      "full_name": "Ученик 419",
+      "class_name": "10A",
+      "uid": "uid-419"
+    },
+    {
+      "id": "s-420",
+      "full_name": "Ученик 420",
+      "class_name": "10A",
+      "uid": "uid-420"
+    },
+    {
+      "id": "s-421",
+      "full_name": "Ученик 421",
+      "class_name": "10A",
+      "uid": "uid-421"
+    },
+    {
+      "id": "s-422",
+      "full_name": "Ученик 422",
+      "class_name": "10A",
+      "uid": "uid-422"
+    },
+    {
+      "id": "s-423",
+      "full_name": "Ученик 423",
+      "class_name": "10A",
+      "uid": "uid-423"
+    },
+    {
+      "id": "s-424",
+      "full_name": "Ученик 424",
+      "class_name": "10B",
+      "uid": "uid-424"
+    },
+    {
+      "id": "s-425",
+      "full_name": "Ученик 425",
+      "class_name": "10B",
+      "uid": "uid-425"
+    },
+    {
+      "id": "s-426",
+      "full_name": "Ученик 426",
+      "class_name": "10B",
+      "uid": "uid-426"
+    },
+    {
+      "id": "s-427",
+      "full_name": "Ученик 427",
+      "class_name": "10B",
+      "uid": "uid-427"
+    },
+    {
+      "id": "s-428",
+      "full_name": "Ученик 428",
+      "class_name": "10B",
+      "uid": "uid-428"
+    },
+    {
+      "id": "s-429",
+      "full_name": "Ученик 429",
+      "class_name": "10B",
+      "uid": "uid-429"
+    },
+    {
+      "id": "s-430",
+      "full_name": "Ученик 430",
+      "class_name": "10B",
+      "uid": "uid-430"
+    },
+    {
+      "id": "s-431",
+      "full_name": "Ученик 431",
+      "class_name": "10B",
+      "uid": "uid-431"
+    },
+    {
+      "id": "s-432",
+      "full_name": "Ученик 432",
+      "class_name": "10B",
+      "uid": "uid-432"
+    },
+    {
+      "id": "s-433",
+      "full_name": "Ученик 433",
+      "class_name": "10B",
+      "uid": "uid-433"
+    },
+    {
+      "id": "s-434",
+      "full_name": "Ученик 434",
+      "class_name": "10B",
+      "uid": "uid-434"
+    },
+    {
+      "id": "s-435",
+      "full_name": "Ученик 435",
+      "class_name": "10B",
+      "uid": "uid-435"
+    },
+    {
+      "id": "s-436",
+      "full_name": "Ученик 436",
+      "class_name": "10B",
+      "uid": "uid-436"
+    },
+    {
+      "id": "s-437",
+      "full_name": "Ученик 437",
+      "class_name": "10B",
+      "uid": "uid-437"
+    },
+    {
+      "id": "s-438",
+      "full_name": "Ученик 438",
+      "class_name": "10B",
+      "uid": "uid-438"
+    },
+    {
+      "id": "s-439",
+      "full_name": "Ученик 439",
+      "class_name": "10B",
+      "uid": "uid-439"
+    },
+    {
+      "id": "s-440",
+      "full_name": "Ученик 440",
+      "class_name": "10B",
+      "uid": "uid-440"
+    },
+    {
+      "id": "s-441",
+      "full_name": "Ученик 441",
+      "class_name": "10B",
+      "uid": "uid-441"
+    },
+    {
+      "id": "s-442",
+      "full_name": "Ученик 442",
+      "class_name": "10B",
+      "uid": "uid-442"
+    },
+    {
+      "id": "s-443",
+      "full_name": "Ученик 443",
+      "class_name": "10B",
+      "uid": "uid-443"
+    },
+    {
+      "id": "s-444",
+      "full_name": "Ученик 444",
+      "class_name": "10B",
+      "uid": "uid-444"
+    },
+    {
+      "id": "s-445",
+      "full_name": "Ученик 445",
+      "class_name": "10B",
+      "uid": "uid-445"
+    },
+    {
+      "id": "s-446",
+      "full_name": "Ученик 446",
+      "class_name": "10B",
+      "uid": "uid-446"
+    },
+    {
+      "id": "s-447",
+      "full_name": "Ученик 447",
+      "class_name": "10B",
+      "uid": "uid-447"
+    },
+    {
+      "id": "s-448",
+      "full_name": "Ученик 448",
+      "class_name": "10B",
+      "uid": "uid-448"
+    },
+    {
+      "id": "s-449",
+      "full_name": "Ученик 449",
+      "class_name": "11A",
+      "uid": "uid-449"
+    },
+    {
+      "id": "s-450",
+      "full_name": "Ученик 450",
+      "class_name": "11A",
+      "uid": "uid-450"
+    },
+    {
+      "id": "s-451",
+      "full_name": "Ученик 451",
+      "class_name": "11A",
+      "uid": "uid-451"
+    },
+    {
+      "id": "s-452",
+      "full_name": "Ученик 452",
+      "class_name": "11A",
+      "uid": "uid-452"
+    },
+    {
+      "id": "s-453",
+      "full_name": "Ученик 453",
+      "class_name": "11A",
+      "uid": "uid-453"
+    },
+    {
+      "id": "s-454",
+      "full_name": "Ученик 454",
+      "class_name": "11A",
+      "uid": "uid-454"
+    },
+    {
+      "id": "s-455",
+      "full_name": "Ученик 455",
+      "class_name": "11A",
+      "uid": "uid-455"
+    },
+    {
+      "id": "s-456",
+      "full_name": "Ученик 456",
+      "class_name": "11A",
+      "uid": "uid-456"
+    },
+    {
+      "id": "s-457",
+      "full_name": "Ученик 457",
+      "class_name": "11A",
+      "uid": "uid-457"
+    },
+    {
+      "id": "s-458",
+      "full_name": "Ученик 458",
+      "class_name": "11A",
+      "uid": "uid-458"
+    },
+    {
+      "id": "s-459",
+      "full_name": "Ученик 459",
+      "class_name": "11A",
+      "uid": "uid-459"
+    },
+    {
+      "id": "s-460",
+      "full_name": "Ученик 460",
+      "class_name": "11A",
+      "uid": "uid-460"
+    },
+    {
+      "id": "s-461",
+      "full_name": "Ученик 461",
+      "class_name": "11A",
+      "uid": "uid-461"
+    },
+    {
+      "id": "s-462",
+      "full_name": "Ученик 462",
+      "class_name": "11A",
+      "uid": "uid-462"
+    },
+    {
+      "id": "s-463",
+      "full_name": "Ученик 463",
+      "class_name": "11A",
+      "uid": "uid-463"
+    },
+    {
+      "id": "s-464",
+      "full_name": "Ученик 464",
+      "class_name": "11A",
+      "uid": "uid-464"
+    },
+    {
+      "id": "s-465",
+      "full_name": "Ученик 465",
+      "class_name": "11A",
+      "uid": "uid-465"
+    },
+    {
+      "id": "s-466",
+      "full_name": "Ученик 466",
+      "class_name": "11A",
+      "uid": "uid-466"
+    },
+    {
+      "id": "s-467",
+      "full_name": "Ученик 467",
+      "class_name": "11A",
+      "uid": "uid-467"
+    },
+    {
+      "id": "s-468",
+      "full_name": "Ученик 468",
+      "class_name": "11A",
+      "uid": "uid-468"
+    },
+    {
+      "id": "s-469",
+      "full_name": "Ученик 469",
+      "class_name": "11A",
+      "uid": "uid-469"
+    },
+    {
+      "id": "s-470",
+      "full_name": "Ученик 470",
+      "class_name": "11A",
+      "uid": "uid-470"
+    },
+    {
+      "id": "s-471",
+      "full_name": "Ученик 471",
+      "class_name": "11A",
+      "uid": "uid-471"
+    },
+    {
+      "id": "s-472",
+      "full_name": "Ученик 472",
+      "class_name": "11A",
+      "uid": "uid-472"
+    },
+    {
+      "id": "s-473",
+      "full_name": "Ученик 473",
+      "class_name": "11A",
+      "uid": "uid-473"
+    },
+    {
+      "id": "s-474",
+      "full_name": "Ученик 474",
+      "class_name": "11B",
+      "uid": "uid-474"
+    },
+    {
+      "id": "s-475",
+      "full_name": "Ученик 475",
+      "class_name": "11B",
+      "uid": "uid-475"
+    },
+    {
+      "id": "s-476",
+      "full_name": "Ученик 476",
+      "class_name": "11B",
+      "uid": "uid-476"
+    },
+    {
+      "id": "s-477",
+      "full_name": "Ученик 477",
+      "class_name": "11B",
+      "uid": "uid-477"
+    },
+    {
+      "id": "s-478",
+      "full_name": "Ученик 478",
+      "class_name": "11B",
+      "uid": "uid-478"
+    },
+    {
+      "id": "s-479",
+      "full_name": "Ученик 479",
+      "class_name": "11B",
+      "uid": "uid-479"
+    },
+    {
+      "id": "s-480",
+      "full_name": "Ученик 480",
+      "class_name": "11B",
+      "uid": "uid-480"
+    },
+    {
+      "id": "s-481",
+      "full_name": "Ученик 481",
+      "class_name": "11B",
+      "uid": "uid-481"
+    },
+    {
+      "id": "s-482",
+      "full_name": "Ученик 482",
+      "class_name": "11B",
+      "uid": "uid-482"
+    },
+    {
+      "id": "s-483",
+      "full_name": "Ученик 483",
+      "class_name": "11B",
+      "uid": "uid-483"
+    },
+    {
+      "id": "s-484",
+      "full_name": "Ученик 484",
+      "class_name": "11B",
+      "uid": "uid-484"
+    },
+    {
+      "id": "s-485",
+      "full_name": "Ученик 485",
+      "class_name": "11B",
+      "uid": "uid-485"
+    },
+    {
+      "id": "s-486",
+      "full_name": "Ученик 486",
+      "class_name": "11B",
+      "uid": "uid-486"
+    },
+    {
+      "id": "s-487",
+      "full_name": "Ученик 487",
+      "class_name": "11B",
+      "uid": "uid-487"
+    },
+    {
+      "id": "s-488",
+      "full_name": "Ученик 488",
+      "class_name": "11B",
+      "uid": "uid-488"
+    },
+    {
+      "id": "s-489",
+      "full_name": "Ученик 489",
+      "class_name": "11B",
+      "uid": "uid-489"
+    },
+    {
+      "id": "s-490",
+      "full_name": "Ученик 490",
+      "class_name": "11B",
+      "uid": "uid-490"
+    },
+    {
+      "id": "s-491",
+      "full_name": "Ученик 491",
+      "class_name": "11B",
+      "uid": "uid-491"
+    },
+    {
+      "id": "s-492",
+      "full_name": "Ученик 492",
+      "class_name": "11B",
+      "uid": "uid-492"
+    },
+    {
+      "id": "s-493",
+      "full_name": "Ученик 493",
+      "class_name": "11B",
+      "uid": "uid-493"
+    },
+    {
+      "id": "s-494",
+      "full_name": "Ученик 494",
+      "class_name": "11B",
+      "uid": "uid-494"
+    },
+    {
+      "id": "s-495",
+      "full_name": "Ученик 495",
+      "class_name": "11B",
+      "uid": "uid-495"
+    },
+    {
+      "id": "s-496",
+      "full_name": "Ученик 496",
+      "class_name": "11B",
+      "uid": "uid-496"
+    },
+    {
+      "id": "s-497",
+      "full_name": "Ученик 497",
+      "class_name": "11B",
+      "uid": "uid-497"
+    },
+    {
+      "id": "s-498",
+      "full_name": "Ученик 498",
+      "class_name": "11B",
+      "uid": "uid-498"
+    }
+  ]
+}
