@@ -152,6 +152,66 @@ export type Database = {
           },
         ]
       }
+      attendance_scans: {
+        Row: {
+          class_name: string
+          device_info: string | null
+          id: string
+          nfc_tag: string | null
+          scanned_at: string
+          status: string
+          student_name: string
+        }
+        Insert: {
+          class_name: string
+          device_info?: string | null
+          id?: string
+          nfc_tag?: string | null
+          scanned_at?: string
+          status?: string
+          student_name: string
+        }
+        Update: {
+          class_name?: string
+          device_info?: string | null
+          id?: string
+          nfc_tag?: string | null
+          scanned_at?: string
+          status?: string
+          student_name?: string
+        }
+        Relationships: []
+      }
+      cafeteria_reports: {
+        Row: {
+          by_class: Json
+          created_at: string
+          id: string
+          meal_time: string
+          notes: string | null
+          report_date: string
+          total_portions: number
+        }
+        Insert: {
+          by_class?: Json
+          created_at?: string
+          id?: string
+          meal_time?: string
+          notes?: string | null
+          report_date?: string
+          total_portions?: number
+        }
+        Update: {
+          by_class?: Json
+          created_at?: string
+          id?: string
+          meal_time?: string
+          notes?: string | null
+          report_date?: string
+          total_portions?: number
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           chat_room: string
@@ -272,6 +332,78 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_reports: {
+        Row: {
+          ai_summary: string | null
+          by_class: Json
+          cafeteria_portions: number
+          created_at: string
+          id: string
+          late_arrivals: Json
+          report_date: string
+          teacher_status: Json
+          total_absent: number
+          total_present: number
+        }
+        Insert: {
+          ai_summary?: string | null
+          by_class?: Json
+          cafeteria_portions?: number
+          created_at?: string
+          id?: string
+          late_arrivals?: Json
+          report_date?: string
+          teacher_status?: Json
+          total_absent?: number
+          total_present?: number
+        }
+        Update: {
+          ai_summary?: string | null
+          by_class?: Json
+          cafeteria_portions?: number
+          created_at?: string
+          id?: string
+          late_arrivals?: Json
+          report_date?: string
+          teacher_status?: Json
+          total_absent?: number
+          total_present?: number
+        }
+        Relationships: []
+      }
+      generated_schedules: {
+        Row: {
+          ai_notes: string | null
+          conflicts: Json
+          created_at: string
+          day_of_week: string
+          for_date: string
+          generated_by: string | null
+          grid: Json
+          id: string
+        }
+        Insert: {
+          ai_notes?: string | null
+          conflicts?: Json
+          created_at?: string
+          day_of_week: string
+          for_date?: string
+          generated_by?: string | null
+          grid?: Json
+          id?: string
+        }
+        Update: {
+          ai_notes?: string | null
+          conflicts?: Json
+          created_at?: string
+          day_of_week?: string
+          for_date?: string
+          generated_by?: string | null
+          grid?: Json
+          id?: string
+        }
+        Relationships: []
+      }
       incidents: {
         Row: {
           assigned_staff_id: string | null
@@ -373,6 +505,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      legal_documents: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          order_number: string
+          required_fields: Json
+          source_url: string | null
+          template: string
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          order_number: string
+          required_fields?: Json
+          source_url?: string | null
+          template: string
+          title: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          order_number?: string
+          required_fields?: Json
+          source_url?: string | null
+          template?: string
+          title?: string
+        }
+        Relationships: []
       }
       legal_orders: {
         Row: {
@@ -719,6 +884,24 @@ export type Database = {
           },
         ]
       }
+      school_periods: {
+        Row: {
+          id: string
+          period_number: number
+          time_label: string
+        }
+        Insert: {
+          id?: string
+          period_number: number
+          time_label: string
+        }
+        Update: {
+          id?: string
+          period_number?: number
+          time_label?: string
+        }
+        Relationships: []
+      }
       staff: {
         Row: {
           created_at: string
@@ -863,6 +1046,44 @@ export type Database = {
           {
             foreignKeyName: "tasks_assignee_staff_id_fkey"
             columns: ["assignee_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teaching_load: {
+        Row: {
+          class_name: string
+          created_at: string
+          hours_per_week: number
+          id: string
+          subject: string
+          teacher_id: string | null
+          teacher_name: string
+        }
+        Insert: {
+          class_name: string
+          created_at?: string
+          hours_per_week?: number
+          id?: string
+          subject: string
+          teacher_id?: string | null
+          teacher_name: string
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          hours_per_week?: number
+          id?: string
+          subject?: string
+          teacher_id?: string | null
+          teacher_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teaching_load_teacher_id_fkey"
+            columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "staff"
             referencedColumns: ["id"]
