@@ -15,7 +15,7 @@ export default function WAOutboundLogs() {
         const j = await res.json();
         setRows(j.logs || []);
       } else {
-        const { data } = await supabase.from('wa_outbound_logs').select('*').order('created_at', { ascending: false }).limit(200);
+        const { data } = await (supabase as any).from('wa_outbound_logs').select('*').order('created_at', { ascending: false }).limit(200);
         setRows(data || []);
       }
     } catch (e) {
