@@ -23,7 +23,7 @@ export default function Attendance() {
         }
         setEvents(ev);
       } else {
-        const { data, error } = await supabase.from('nfc_events').select('*').order('created_at', { ascending: false }).limit(200);
+        const { data, error } = await (supabase as any).from('nfc_events').select('*').order('created_at', { ascending: false }).limit(200);
         if (error) throw error;
         setEvents(data || []);
       }
