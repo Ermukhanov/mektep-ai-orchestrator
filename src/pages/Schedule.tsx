@@ -15,6 +15,7 @@ import { STAFF, SUBJECTS } from "@/lib/mockData";
 import { toast } from "sonner";
 
 interface Slot {
+  id?: string;
   class_name: string;
   period: number;
   subject: string;
